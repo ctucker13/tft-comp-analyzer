@@ -146,6 +146,11 @@ Based on the match data, here are the key compositions identified:
     
     async def generate(self, messages: list, **kwargs) -> str:
         """Generate response from LLM or return mock data"""
+    
+        print(f"DEBUG: LLM Client - Provider: {self.provider}")
+        print(f"DEBUG: LLM Client - Model: {self.model}")
+        print(f"DEBUG: LLM Client - Is mock mode: {self._is_mock_mode()}")
+        print(f"DEBUG: LLM Client - Client exists: {self.client is not None}")
         
         # Use mock if no valid client
         if self._is_mock_mode():
@@ -167,6 +172,7 @@ Based on the match data, here are the key compositions identified:
                 return response.choices[0].message.content or "No response generated"
             
             elif self.provider == LLMProvider.ANTHROPIC:
+                print(f"Attempting Anthropic API call with model: {self.model}")
                 # Extract system message and user messages for Anthropic format
                 system_msg = None
                 user_messages = []

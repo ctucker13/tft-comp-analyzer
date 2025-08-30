@@ -1,7 +1,9 @@
 import aiohttp
 import asyncio
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import json
+import time
+from datetime import datetime, timedelta
 
 class RiotTFTAPI:
     def __init__(self, api_key: str, region: str = "euw1"):
@@ -11,8 +13,33 @@ class RiotTFTAPI:
         self.headers = {"X-Riot-Token": self.api_key}
         self._force_mock = False
         
+        # Rate limiting for Development API key (10 requests per 10 seconds)
+        self._request_times = []
+        self._max_requests_per_window = 8  # Stay under 10 to be safe
+        self._time_window = 12  # 12 seconds to be safe
+        
         # Map platform to regional cluster for match data
         self.regional_cluster = self._get_regional_cluster(region)
+    
+    async def _rate_limit_wait(self):
+        """Ensure we don't exceed rate limits"""
+        current_time = time.time()
+        
+        # Remove old requests outside the time window
+        self._request_times = [t for t in self._request_times if current_time - t < self._time_window]
+        
+        # If we're at the limit, wait
+        if len(self._request_times) >= self._max_requests_per_window:
+            sleep_time = self._time_window - (current_time - self._request_times[0]) + 1
+            if sleep_time > 0:
+                print(f"⏳ Rate limit protection: waiting {sleep_time:.1f} seconds...")
+                await asyncio.sleep(sleep_time)
+                # Clean up old requests after waiting
+                current_time = time.time()
+                self._request_times = [t for t in self._request_times if current_time - t < self._time_window]
+        
+        # Record this request
+        self._request_times.append(current_time)
     
     def _get_regional_cluster(self, platform: str) -> str:
         """Map platform ID to regional cluster for match data"""
@@ -35,6 +62,29 @@ class RiotTFTAPI:
                 self.api_key == "your_riot_api_key_here" or 
                 self.api_key == "" or 
                 self._force_mock)
+    
+    def _is_set15_match(self, match_data: Dict[str, Any]) -> bool:
+        """Check if match is from Set 15"""
+        if not match_data:
+            return False
+        info = match_data.get("info", {})
+        set_number = info.get("tft_set_number", 0)
+        return set_number == 15
+    
+    def _is_recent_match(self, match_data: Dict[str, Any], days_back: int = 7) -> bool:
+        """Check if match is from the last N days"""
+        if not match_data:
+            return False
+        info = match_data.get("info", {})
+        game_datetime = info.get("game_datetime", 0)
+        
+        if game_datetime:
+            # Convert from milliseconds to seconds
+            match_time = datetime.fromtimestamp(game_datetime / 1000)
+            cutoff_time = datetime.now() - timedelta(days=days_back)
+            return match_time > cutoff_time
+        
+        return False
     
     async def test_api_connection(self) -> bool:
         """Test if the API key and connection are working"""
@@ -77,27 +127,24 @@ class RiotTFTAPI:
             return False
     
     def _get_mock_challenger_players(self) -> List[Dict]:
-        """Return mock challenger data"""
+        """Return mock challenger data with PUUID directly"""
         return [
             {
-                "summonerId": "mock_player_1_encrypted_id", 
-                "summonerName": "EUWChallenger1", 
+                "puuid": "mock_puuid_1", 
                 "leaguePoints": 1200,
                 "rank": "I",
                 "wins": 45,
                 "losses": 25
             },
             {
-                "summonerId": "mock_player_2_encrypted_id", 
-                "summonerName": "EUWChallenger2", 
+                "puuid": "mock_puuid_2", 
                 "leaguePoints": 1150,
                 "rank": "I", 
                 "wins": 42,
                 "losses": 28
             },
             {
-                "summonerId": "mock_player_3_encrypted_id", 
-                "summonerName": "EUWChallenger3", 
+                "puuid": "mock_puuid_3", 
                 "leaguePoints": 1100,
                 "rank": "I",
                 "wins": 40,
@@ -151,6 +198,9 @@ class RiotTFTAPI:
                 "name": f"EUWMockSummoner_{summoner_id[-1:]}"
             }
         
+        # Rate limiting protection
+        await self._rate_limit_wait()
+        
         # Use platform routing for summoner data (euw1, not europe)
         url = f"{self.base_url}/tft/summoner/v1/summoners/{summoner_id}"
         print(f"Getting summoner data from: {url}")
@@ -169,7 +219,8 @@ class RiotTFTAPI:
                         print("✗ 401 Unauthorized - using mock data")
                         return {"puuid": f"mock_puuid_{summoner_id}"}
                     elif response.status == 403:
-                        print("✗ 403 Forbidden - using mock data")  
+                        print("✗ 403 Forbidden - Rate limited! Using mock data")
+                        print("💡 Tip: Development API key allows only 10 requests per 10 seconds")
                         return {"puuid": f"mock_puuid_{summoner_id}"}
                     else:
                         print(f"✗ Summoner API Error: {response.status} - using mock data")
@@ -187,9 +238,12 @@ class RiotTFTAPI:
         
         if self.is_mock_mode() or puuid.startswith("mock_"):
             base_id = puuid.replace("mock_puuid_", "")
-            mock_matches = [f"EUW1_mock_match_{base_id}_{i}" for i in range(1, min(count + 1, 6))]
-            print(f"Using mock match history: {mock_matches}")
+            mock_matches = [f"EUW1_set15_mock_match_{base_id}_{i}" for i in range(1, min(count + 1, 6))]
+            print(f"Using mock Set 15 match history: {mock_matches}")
             return mock_matches
+        
+        # Rate limiting protection
+        await self._rate_limit_wait()
         
         # Use regional cluster for match data (EUROPE for European platforms)
         url = f"https://{self.regional_cluster}.api.riotgames.com/tft/match/v1/matches/by-puuid/{puuid}/ids"
@@ -207,29 +261,29 @@ class RiotTFTAPI:
                         return matches
                     elif response.status == 401:
                         print("✗ 401 Unauthorized - using mock matches")
-                        return [f"EUW1_mock_match_1_{i}" for i in range(1, 4)]
+                        return [f"EUW1_set15_mock_match_1_{i}" for i in range(1, 4)]
                     elif response.status == 403:
-                        print("✗ 403 Forbidden - using mock matches")
-                        return [f"EUW1_mock_match_1_{i}" for i in range(1, 4)]
+                        print("✗ 403 Forbidden - Rate limited! Using mock matches")
+                        return [f"EUW1_set15_mock_match_1_{i}" for i in range(1, 4)]
                     else:
                         print(f"✗ Match history API Error: {response.status}")
                         text = await response.text()
                         print(f"  Response: {text[:200]}...")
-                        return [f"EUW1_mock_match_1_{i}" for i in range(1, 4)]
+                        return [f"EUW1_set15_mock_match_1_{i}" for i in range(1, 4)]
                         
         except Exception as e:
             print(f"✗ Error fetching match history: {e}")
             return []
     
     async def get_match_details(self, match_id: str) -> Dict[str, Any]:
-        """Get detailed match data"""
+        """Get detailed match data - filtered for Set 15"""
         if not match_id:
             print("✗ No match ID provided")
             return {}
         
-        if self.is_mock_mode() or match_id.startswith("EUW1_mock_"):
-            print(f"Using mock match details for: {match_id}")
-            return self._generate_mock_match_details(match_id)
+        if self.is_mock_mode() or "mock" in match_id:
+            print(f"Using mock Set 15 match details for: {match_id}")
+            return self._generate_set15_mock_match_details(match_id)
         
         # Use regional cluster for match data
         url = f"https://{self.regional_cluster}.api.riotgames.com/tft/match/v1/matches/{match_id}"
@@ -242,95 +296,151 @@ class RiotTFTAPI:
                     
                     if response.status == 200:
                         match_data = await response.json()
-                        participants_count = len(match_data.get("info", {}).get("participants", []))
-                        print(f"✓ Got match details with {participants_count} participants")
-                        return match_data
+                        
+                        # Filter for Set 15 only
+                        if self._is_set15_match(match_data):
+                            participants_count = len(match_data.get("info", {}).get("participants", []))
+                            set_num = match_data.get("info", {}).get("tft_set_number", "Unknown")
+                            print(f"✓ Got Set {set_num} match with {participants_count} participants")
+                            return match_data
+                        else:
+                            set_num = match_data.get("info", {}).get("tft_set_number", "Unknown")
+                            print(f"⏭️ Skipping Set {set_num} match (looking for Set 15)")
+                            return {}
                     elif response.status == 401:
                         print("✗ 401 Unauthorized - using mock match details")
-                        return self._generate_mock_match_details(f"mock_{match_id}")
+                        return self._generate_set15_mock_match_details(f"mock_{match_id}")
                     elif response.status == 403:
                         print("✗ 403 Forbidden - using mock match details")
-                        return self._generate_mock_match_details(f"mock_{match_id}")
+                        return self._generate_set15_mock_match_details(f"mock_{match_id}")
                     else:
                         print(f"✗ Match details API Error: {response.status}")
                         text = await response.text()
                         print(f"  Response: {text[:200]}...")
-                        return self._generate_mock_match_details(f"mock_{match_id}")
+                        return self._generate_set15_mock_match_details(f"mock_{match_id}")
                         
         except Exception as e:
             print(f"✗ Error fetching match details: {e}")
-            return self._generate_mock_match_details(match_id)
+            return self._generate_set15_mock_match_details(match_id)
     
-    def _generate_mock_match_details(self, match_id: str) -> Dict[str, Any]:
-        """Generate realistic mock TFT match data"""
+    def _generate_set15_mock_match_details(self, match_id: str) -> Dict[str, Any]:
+        """Generate realistic Set 15 TFT match data with current meta"""
         import random
         
-        # Mock TFT traits and units (expanded to avoid sample errors)
-        mock_traits = [
-            {"name": "Invoker", "num_units": 2, "style": 1, "tier_current": 1},
-            {"name": "Scrap", "num_units": 4, "style": 2, "tier_current": 2},
-            {"name": "Challenger", "num_units": 3, "style": 1, "tier_current": 1},
-            {"name": "Bodyguard", "num_units": 2, "style": 1, "tier_current": 1},
-            {"name": "Scholar", "num_units": 2, "style": 1, "tier_current": 1},
-            {"name": "Assassin", "num_units": 3, "style": 1, "tier_current": 1},
-            {"name": "Syndicate", "num_units": 3, "style": 1, "tier_current": 1},
-            {"name": "Enchanter", "num_units": 2, "style": 1, "tier_current": 1}
+        # Set 15 traits (K.O. Coliseum meta)
+        set15_traits = [
+            {"name": "TFT15_Destroyer", "num_units": 2, "style": 1, "tier_current": 1},
+            {"name": "TFT15_DragonFist", "num_units": 3, "style": 1, "tier_current": 1},
+            {"name": "TFT15_Duelist", "num_units": 4, "style": 2, "tier_current": 2},
+            {"name": "TFT15_Conqueror", "num_units": 2, "style": 1, "tier_current": 1},
+            {"name": "TFT15_Warband", "num_units": 4, "style": 2, "tier_current": 2},
+            {"name": "TFT15_Family", "num_units": 3, "style": 1, "tier_current": 1}
         ]
         
-        mock_units = [
-            {"character_id": "TFT7_Jinx", "itemNames": ["TFT_Item_InfinityEdge"], "name": "Jinx", "rarity": 4, "tier": 2},
-            {"character_id": "TFT7_Vi", "itemNames": ["TFT_Item_WarmogsArmor"], "name": "Vi", "rarity": 2, "tier": 2},
-            {"character_id": "TFT7_Ezreal", "itemNames": [], "name": "Ezreal", "rarity": 1, "tier": 2},
-            {"character_id": "TFT7_Blitzcrank", "itemNames": [], "name": "Blitzcrank", "rarity": 2, "tier": 1},
-            {"character_id": "TFT7_Viktor", "itemNames": ["TFT_Item_RabadonsDeathcap"], "name": "Viktor", "rarity": 4, "tier": 2},
-            {"character_id": "TFT7_Jayce", "itemNames": [], "name": "Jayce", "rarity": 3, "tier": 1},
-            {"character_id": "TFT7_Caitlyn", "itemNames": ["TFT_Item_LastWhisper"], "name": "Caitlyn", "rarity": 1, "tier": 1},
-            {"character_id": "TFT7_Darius", "itemNames": ["TFT_Item_WarmogsArmor"], "name": "Darius", "rarity": 1, "tier": 2},
+        # Set 15 units (K.O. Coliseum champions)
+        set15_units = [
+            {"character_id": "TFT15_Jinx", "itemNames": ["TFT_Item_InfinityEdge", "TFT_Item_LastWhisper"], "name": "Jinx", "rarity": 4, "tier": 2},
+            {"character_id": "TFT15_Vi", "itemNames": ["TFT_Item_WarmogsArmor"], "name": "Vi", "rarity": 2, "tier": 2},
+            {"character_id": "TFT15_Ekko", "itemNames": ["TFT_Item_RabadonsDeathcap"], "name": "Ekko", "rarity": 5, "tier": 2},
+            {"character_id": "TFT15_Caitlyn", "itemNames": ["TFT_Item_GuinsoosRageblade"], "name": "Caitlyn", "rarity": 1, "tier": 2},
+            {"character_id": "TFT15_Jayce", "itemNames": [], "name": "Jayce", "rarity": 3, "tier": 1},
+            {"character_id": "TFT15_Powder", "itemNames": ["TFT_Item_BlueBuffs"], "name": "Powder", "rarity": 2, "tier": 2},
+            {"character_id": "TFT15_Vander", "itemNames": ["TFT_Item_DragonsClaw"], "name": "Vander", "rarity": 3, "tier": 1},
+            {"character_id": "TFT15_Silco", "itemNames": ["TFT_Item_Morellonomicon"], "name": "Silco", "rarity": 4, "tier": 2},
+            {"character_id": "TFT15_Heimerdinger", "itemNames": [], "name": "Heimerdinger", "rarity": 5, "tier": 1},
+            {"character_id": "TFT15_Warwick", "itemNames": ["TFT_Item_TitansResolve"], "name": "Warwick", "rarity": 1, "tier": 2},
+            {"character_id": "TFT15_Lucian", "itemNames": ["TFT_Item_BloodThirster"], "name": "Lucian", "rarity": 3, "tier": 2},
+            {"character_id": "TFT15_Ashe", "itemNames": ["TFT_Item_GiantSlayer"], "name": "Ashe", "rarity": 4, "tier": 1}
         ]
         
-        # Generate 8 participants with varying placements
+        # Set 15 augments (current patch)
+        set15_augments = [
+            "TFT15_Augment_ConquerorEmblem",
+            "TFT15_Augment_WarbandHeart", 
+            "TFT15_Augment_MultistirkerCrest",
+            "TFT15_Augment_ComponentGrabBag",
+            "TFT15_Augment_TriForce",
+            "TFT15_Augment_PowerSnaxPlus",
+            "TFT15_Augment_RoleReinforcement"
+        ]
+        
+        # Generate 8 participants with Set 15 meta comps
         participants = []
         for i in range(8):
             placement = i + 1
-            # Better comps = better placement simulation
+            
+            # Simulate Set 15 meta performance (longer games, more complex)
             if placement <= 4:  # Top 4
-                gold_left = random.randint(0, 15)
-                level = random.randint(7, 9)
-                last_round = random.randint(25, 35)
+                gold_left = random.randint(0, 25)
+                level = random.randint(8, 9)
+                last_round = random.randint(32, 42)  # Set 15 games are longer
             else:  # Bottom 4
-                gold_left = random.randint(20, 50)
-                level = random.randint(5, 7)
-                last_round = random.randint(15, 25)
+                gold_left = random.randint(20, 70)
+                level = random.randint(6, 8)
+                last_round = random.randint(22, 32)
             
             participants.append({
-                "augments": ["TFT7_Augment_ScrapHeap", "TFT7_Augment_CyberneticImplants"],
-                "companion": {"content_ID": "TFT7_Companion_Pengu", "item_ID": 1, "species": "PetLLTurtle"},
+                "augments": random.sample(set15_augments, k=3),  # 3 augments in Set 15
+                "companion": {
+                    "content_ID": f"TFT15_Companion_{random.choice(['Starmaw', 'Hauntling', 'Poro'])}", 
+                    "item_ID": random.randint(1, 25),
+                    "species": f"Pet{random.choice(['Starmaw', 'Hauntling', 'Poro'])}"
+                },
                 "gold_left": gold_left,
                 "last_round": last_round,
                 "level": level,
                 "placement": placement,
                 "players_eliminated": placement - 1,
-                "puuid": f"mock_puuid_euw_{i}",
-                "time_eliminated": 1800 + (placement * 100),
-                "total_damage_to_players": max(0, 2000 - (placement * 200)),
-                "traits": random.sample(mock_traits, k=min(4, len(mock_traits))),
-                "units": random.sample(mock_units, k=min(random.randint(5, 7), len(mock_units)))
+                "puuid": f"set15_mock_puuid_euw_{i}",
+                "time_eliminated": 2400 + (placement * 200),  # Set 15 games are longer
+                "total_damage_to_players": max(0, 3000 - (placement * 300)),
+                "traits": random.sample(set15_traits, k=min(5, len(set15_traits))),
+                "units": random.sample(set15_units, k=min(random.randint(7, 9), len(set15_units))),
+                # Set 15 specific fields
+                "power_snax_used": random.randint(0, 2),
+                "role_bonuses": ["Tank", "Marksman"] if placement <= 4 else ["Fighter"]
             })
         
-        return {
-            "metadata": {
-                "data_version": "7",
-                "match_id": match_id,
-                "participants": [p["puuid"] for p in participants]
-            },
-            "info": {
-                "game_datetime": 1650000000000,
-                "game_length": 1800.0 + random.randint(-300, 300),
-                "game_version": "Version 14.15.567.1234",
-                "participants": participants,
-                "queue_id": 1100,
-                "tft_game_type": "standard",
-                "tft_set_core_name": "TFTSet12",
-                "tft_set_number": 12
-            }
-        }
+        # Current timestamp for recent matches
+        current_timestamp = int(time.time() * 1000)
+        
+    async def get_current_patch_from_matches(self) -> Optional[str]:
+        """Get current patch by checking recent match data"""
+        print("🔍 Detecting current patch from match data...")
+        
+        if self.is_mock_mode():
+            return "15.3"  # Mock patch
+        
+        try:
+            # Get a recent match to check game version
+            players = await self.get_challenger_players()
+            
+            for player in players[:3]:
+                summoner_data = await self.get_summoner_by_id(player.get("summonerId", ""))
+                puuid = summoner_data.get("puuid", "")
+                
+                if puuid:
+                    matches = await self.get_match_history(puuid, count=3)
+                    
+                    for match_id in matches:
+                        match_details = await self.get_match_details(match_id)
+                        
+                        if match_details:
+                            info = match_details.get("info", {})
+                            game_version = info.get("game_version", "")
+                            set_number = info.get("tft_set_number", 0)
+                            
+                            # Extract patch from game version (e.g., "Version 15.3.567.1234")
+                            import re
+                            version_pattern = r'(\d+\.\d+)'
+                            version_match = re.search(version_pattern, game_version)
+                            
+                            if version_match and set_number == 15:
+                                patch = version_match.group(1)
+                                print(f"✅ Detected patch {patch} from recent match data")
+                                return patch
+            
+        except Exception as e:
+            print(f"Failed to detect patch from matches: {e}")
+        
+        return None

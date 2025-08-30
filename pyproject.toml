@@ -1,7 +1,7 @@
 [project]
 name = "tft-comp-analyzer"
-version = "0.1.0"
-description = "TFT composition analysis using agentic AI"
+version = "0.2.0"  # Updated for Set 15
+description = "TFT Set 15 K.O. Coliseum composition analysis using agentic AI"
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
 ]
@@ -23,13 +23,13 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
-    "pytest-asyncio>=0.21.0",
+    "pytest-asyncio>=0.21.0", 
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.5.0"
 ]
 
-# This tells Hatchling where your package is located
+# Make sure this is correct for your directory structure
 [tool.hatch.build.targets.wheel]
 packages = ["src/tft_analyzer"]
 
