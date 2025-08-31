@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Optional
 import json
 import time
 from datetime import datetime, timedelta
+from config.settings import LLMProvider
 
 class RiotTFTAPI:
     def __init__(self, api_key: str, region: str = "euw1"):
@@ -134,26 +135,29 @@ class RiotTFTAPI:
                 "leaguePoints": 1200,
                 "rank": "I",
                 "wins": 45,
-                "losses": 25
+                "losses": 25,
+                "summonerId": "mock_summoner_1"  # For backwards compatibility
             },
             {
                 "puuid": "mock_puuid_2", 
                 "leaguePoints": 1150,
                 "rank": "I", 
                 "wins": 42,
-                "losses": 28
+                "losses": 28,
+                "summonerId": "mock_summoner_2"
             },
             {
                 "puuid": "mock_puuid_3", 
                 "leaguePoints": 1100,
                 "rank": "I",
                 "wins": 40,
-                "losses": 30
+                "losses": 30,
+                "summonerId": "mock_summoner_3"
             }
         ]
     
     async def get_challenger_players(self) -> List[Dict]:
-        """Get top players for high-quality data"""
+        """Get top players for high-quality data - PUUID included directly"""
         if self.is_mock_mode():
             print("Using mock challenger player data...")
             return self._get_mock_challenger_players()
@@ -171,7 +175,19 @@ class RiotTFTAPI:
                         data = await response.json()
                         entries = data.get("entries", [])
                         print(f"✓ Found {len(entries)} challenger players")
-                        return entries
+                        
+                        # Validate that PUUIDs are present
+                        players_with_puuid = []
+                        for entry in entries:
+                            puuid = entry.get("puuid", "")
+                            if puuid:
+                                players_with_puuid.append(entry)
+                            else:
+                                print(f"⚠️ Skipping player without PUUID: {entry.get('summonerId', 'Unknown')}")
+                        
+                        print(f"✓ {len(players_with_puuid)} players have valid PUUIDs")
+                        return players_with_puuid
+                        
                     elif response.status == 401:
                         print("✗ 401 Unauthorized - Invalid API key, falling back to mock data")
                         return self._get_mock_challenger_players()
@@ -188,50 +204,11 @@ class RiotTFTAPI:
             print(f"✗ Error fetching challenger players: {e} - falling back to mock data")
             return self._get_mock_challenger_players()
     
-    async def get_summoner_by_id(self, summoner_id: str) -> Dict[str, Any]:
-        """Get summoner details including PUUID from summonerId"""
-        if self.is_mock_mode() or summoner_id.startswith("mock_"):
-            mock_puuid = f"mock_puuid_{summoner_id.replace('mock_player_', '').replace('_encrypted_id', '')}"
-            print(f"Using mock PUUID: {mock_puuid}")
-            return {
-                "puuid": mock_puuid,
-                "name": f"EUWMockSummoner_{summoner_id[-1:]}"
-            }
-        
-        # Rate limiting protection
-        await self._rate_limit_wait()
-        
-        # Use platform routing for summoner data (euw1, not europe)
-        url = f"{self.base_url}/tft/summoner/v1/summoners/{summoner_id}"
-        print(f"Getting summoner data from: {url}")
-        
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, headers=self.headers) as response:
-                    print(f"Summoner API response status: {response.status}")
-                    
-                    if response.status == 200:
-                        data = await response.json()
-                        puuid = data.get("puuid", "")
-                        print(f"✓ Got PUUID: {puuid[:20]}..." if puuid else "✗ No PUUID in response")
-                        return data
-                    elif response.status == 401:
-                        print("✗ 401 Unauthorized - using mock data")
-                        return {"puuid": f"mock_puuid_{summoner_id}"}
-                    elif response.status == 403:
-                        print("✗ 403 Forbidden - Rate limited! Using mock data")
-                        print("💡 Tip: Development API key allows only 10 requests per 10 seconds")
-                        return {"puuid": f"mock_puuid_{summoner_id}"}
-                    else:
-                        print(f"✗ Summoner API Error: {response.status} - using mock data")
-                        return {"puuid": f"mock_puuid_{summoner_id}"}
-                        
-        except Exception as e:
-            print(f"✗ Error fetching summoner: {e}")
-            return {"puuid": f"mock_puuid_{summoner_id}"}
+    # REMOVED: get_summoner_by_id method is no longer needed!
+    # The PUUID comes directly from challenger API
     
     async def get_match_history(self, puuid: str, count: int = 20) -> List[str]:
-        """Get recent match IDs"""
+        """Get recent match IDs using PUUID directly"""
         if not puuid:
             print("✗ No PUUID provided")
             return []
@@ -284,6 +261,9 @@ class RiotTFTAPI:
         if self.is_mock_mode() or "mock" in match_id:
             print(f"Using mock Set 15 match details for: {match_id}")
             return self._generate_set15_mock_match_details(match_id)
+        
+        # Rate limiting protection
+        await self._rate_limit_wait()
         
         # Use regional cluster for match data
         url = f"https://{self.regional_cluster}.api.riotgames.com/tft/match/v1/matches/{match_id}"
@@ -404,43 +384,84 @@ class RiotTFTAPI:
         # Current timestamp for recent matches
         current_timestamp = int(time.time() * 1000)
         
+        return {
+            "metadata": {
+                "data_version": "15.3.567.1234",
+                "match_id": match_id,
+                "participants": [p["puuid"] for p in participants]
+            },
+            "info": {
+                "game_datetime": current_timestamp - random.randint(3600000, 86400000),  # 1-24 hours ago
+                "game_length": random.uniform(1800.0, 2800.0),  # 30-47 minutes (Set 15 games longer)
+                "game_version": "Version 15.3.567.1234",
+                "participants": participants,
+                "queue_id": 1100,  # TFT Ranked
+                "tft_game_type": "standard",
+                "tft_set_core_name": "TFTSet15",
+                "tft_set_number": 15
+            }
+        }
+    
     async def get_current_patch_from_matches(self) -> Optional[str]:
-        """Get current patch by checking recent match data"""
-        print("🔍 Detecting current patch from match data...")
+        """Get current patch by checking recent match data - NO summoner API calls"""
+        print("🎮 Checking patch from recent match data...")
         
         if self.is_mock_mode():
             return "15.3"  # Mock patch
         
         try:
-            # Get a recent match to check game version
+            # Get challenger players (they already have PUUIDs!)
             players = await self.get_challenger_players()
             
-            for player in players[:3]:
-                summoner_data = await self.get_summoner_by_id(player.get("summonerId", ""))
-                puuid = summoner_data.get("puuid", "")
+            if not players:
+                print("✗ No challenger players found")
+                return None
+            
+            # Try to get patch info from first few players
+            for i, player in enumerate(players[:3], 1):
+                puuid = player.get("puuid", "")  # Direct PUUID access!
                 
-                if puuid:
-                    matches = await self.get_match_history(puuid, count=3)
+                if not puuid:
+                    print(f"⚠️ Player {i}: Skipping player without PUUID")
+                    continue
                     
-                    for match_id in matches:
+                print(f"  Checking player {i} for patch info...")
+                
+                try:
+                    matches = await self.get_match_history(puuid, count=2)
+                    
+                    if not matches:
+                        print(f"  Player {i}: No matches found")
+                        continue
+                    
+                    for j, match_id in enumerate(matches[:1], 1):  # Check first match only
                         match_details = await self.get_match_details(match_id)
                         
-                        if match_details:
-                            info = match_details.get("info", {})
-                            game_version = info.get("game_version", "")
-                            set_number = info.get("tft_set_number", 0)
-                            
-                            # Extract patch from game version (e.g., "Version 15.3.567.1234")
+                        if not match_details:
+                            continue
+                        
+                        info = match_details.get("info", {})
+                        game_version = info.get("game_version", "")
+                        set_number = info.get("tft_set_number", 0)
+                        
+                        # Extract patch from game version
+                        if game_version and set_number == 15:
                             import re
                             version_pattern = r'(\d+\.\d+)'
                             version_match = re.search(version_pattern, game_version)
                             
-                            if version_match and set_number == 15:
+                            if version_match:
                                 patch = version_match.group(1)
                                 print(f"✅ Detected patch {patch} from recent match data")
                                 return patch
+                    
+                except Exception as player_error:
+                    print(f"  Player {i}: Error getting matches - {player_error}")
+                    continue
+            
+            print("✗ Could not determine patch from any matches")
+            return None
             
         except Exception as e:
-            print(f"Failed to detect patch from matches: {e}")
-        
-        return None
+            print(f"✗ Failed to get patch from match data: {e}")
+            return None
