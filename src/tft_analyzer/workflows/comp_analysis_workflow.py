@@ -4,11 +4,6 @@ from langgraph.graph import StateGraph, END, START
 from typing import Dict, Any, List, TypedDict
 from ..models.llm_provider import LLMClient
 from ..data.riot_api import RiotTFTAPI
-from ..data.dynamic_validation import ValidationManager
-from ..data.set15_validation import (
-    validate_analysis_text, 
-    get_set15_validation_prompt
-)
 
 # Define the state structure
 class AnalysisState(TypedDict):
@@ -22,7 +17,6 @@ class CompAnalysisWorkflow:
         self.llm = llm_client
         self.riot_api = riot_api
         self.settings = settings
-        self.validation_manager = ValidationManager()
         self.graph = self._build_graph()
     
     def _build_graph(self) -> StateGraph:
@@ -251,23 +245,11 @@ Since no recent match data was available, here's general guidance for Set 15: K.
                         "units": unit_names[:8],    # Top 8 units
                     })
         
-        # Get current patch for validation
+        # Get current patch for context
         current_patch = getattr(self.settings, 'current_patch', '15.17')
         
-        # Get dynamic validation requirements
-        validator = await self.validation_manager.get_validator(current_patch)
-        if validator:
-            validation_prompt = validator.get_validation_prompt()
-            print(f"✅ Using dynamic validation for patch {current_patch}")
-        else:
-            # Fallback to static validation
-            validation_prompt = get_set15_validation_prompt()
-            print(f"⚠️ Falling back to static validation for patch {current_patch}")
-        
         prompt = f"""
-        Analyze these TFT Set 15: K.O. Coliseum match results from Patch 15.3+ (released 2025/08/26 onwards).
-        
-        {validation_prompt}
+        Analyze these TFT Set 15: K.O. Coliseum match results from Patch {current_patch}+ (released 2025/08/26 onwards).
         
         Set 15 Context:
         - Power Snax system: 2 power-ups per game (rounds 1-3 and 3-6)
@@ -280,14 +262,12 @@ Since no recent match data was available, here's general guidance for Set 15: K.
         {match_summary}
         
         For each composition pattern, identify:
-        1. SPECIFIC UNIT NAMES (not just trait names) - mention actual champions FROM THE APPROVED LIST ONLY
-        2. Primary trait combinations using ONLY Set 15 traits from the approved list
+        1. SPECIFIC UNIT NAMES and champion builds
+        2. Primary trait combinations and synergies
         3. Key carry units with their exact names and optimal itemization
         4. Role-based team structure and positioning
         5. Power Snax optimization opportunities
         6. Placement consistency and win conditions
-        
-        CRITICAL: Double-check every champion and trait name against the approved lists before including in your response.
         """
         
         messages = [
@@ -298,105 +278,8 @@ Since no recent match data was available, here's general guidance for Set 15: K.
         try:
             analysis = await self.llm.generate(messages, max_tokens=1500)
             
-            # Validate the analysis using dynamic validation
-            if validator:
-                validation_results = validator.validate_text(analysis)
-            else:
-                # Fallback to static validation
-                validation_results = validate_analysis_text(analysis)
-            
-            # Check for validation issues (handle both static and dynamic validation formats)
-            invalid_champions = validation_results.get("invalid_champions", validation_results.get("hallucinated_champions", []))
-            invalid_traits = validation_results.get("invalid_traits", validation_results.get("hallucinated_traits", []))
-            
-            if invalid_champions or invalid_traits:
-                patch_info = validation_results.get("patch_version", current_patch)
-                
-                print(f"❌ CRITICAL VALIDATION ERROR for {patch_info}: LLM hallucinated invalid content!")
-                if invalid_champions:
-                    print(f"   - HALLUCINATED CHAMPIONS: {invalid_champions}")
-                if invalid_traits:
-                    print(f"   - HALLUCINATED TRAITS: {invalid_traits}")
-                
-                print("🔄 Attempting to re-prompt LLM with stricter validation...")
-                
-                # Create a stricter re-prompt
-                strict_prompt = f"""
-                CRITICAL ERROR DETECTED: Your previous response contained hallucinated champions/traits not in Set 15.
-                
-                INVALID CONTENT DETECTED:
-                - Champions NOT in Set 15: {invalid_champions}  
-                - Traits NOT in Set 15: {invalid_traits}
-                
-                {validation_prompt}
-                
-                STRICT REQUIREMENTS:
-                1. ONLY use champions that exist in Set 15 (TFT15_ prefix in API data)
-                2. NEVER mention: Cassiopeia, Elise, LeBlanc, Vladimir (these are Set 14 champions)
-                3. NEVER mention: Black Rose (this is a Set 14 trait)
-                4. If you're unsure about a champion/trait, DO NOT include it
-                5. Focus on the actual match data provided: {match_summary}
-                
-                Please provide a corrected analysis using ONLY validated Set 15 content.
-                """
-                
-                try:
-                    corrected_analysis = await self.llm.generate([
-                        {"role": "system", "content": "You are analyzing TFT Set 15 match data. You must NEVER hallucinate champions or traits that don't exist in Set 15. When in doubt, omit the content."},
-                        {"role": "user", "content": strict_prompt}
-                    ], max_tokens=1500)
-                    
-                    # Validate again
-                    corrected_validation = validate_analysis_text(corrected_analysis)
-                    corrected_invalid_champions = corrected_validation.get("hallucinated_champions", [])
-                    corrected_invalid_traits = corrected_validation.get("hallucinated_traits", [])
-                    
-                    if corrected_invalid_champions or corrected_invalid_traits:
-                        print("❌ Re-prompt failed - still contains hallucinated content:")
-                        print(f"   - Champions: {corrected_invalid_champions}")
-                        print(f"   - Traits: {corrected_invalid_traits}")
-                        
-                        analysis = f"""🚨 **ANALYSIS ERROR: LLM HALLUCINATION DETECTED** 🚨
-
-The AI model generated content containing champions/traits that don't exist in TFT Set 15: K.O. Coliseum (Patch 15.3+).
-
-**HALLUCINATED CONTENT DETECTED:**
-- Invalid Champions: {invalid_champions + corrected_invalid_champions}
-- Invalid Traits: {invalid_traits + corrected_invalid_traits}
-
-**ACTUAL SET 15 MATCH DATA SUMMARY:**
-{match_summary}
-
-❌ **This analysis is unreliable and should not be used for gameplay decisions.**
-
-Please check the validation system or try again with fresh data."""
-                    else:
-                        print("✅ Re-prompt successful - hallucinated content corrected")
-                        analysis = f"""✅ **CORRECTED ANALYSIS** (Original contained hallucinated content)
-
-{corrected_analysis}
-
-*Note: This analysis was corrected after the AI initially hallucinated Set 14 champions/traits.*"""
-                
-                except Exception as re_prompt_error:
-                    print(f"❌ Re-prompt failed with error: {re_prompt_error}")
-                    analysis = f"""🚨 **CRITICAL ANALYSIS ERROR** 🚨
-
-The AI model hallucinated invalid champions/traits from previous TFT sets:
-- Invalid Champions: {invalid_champions}
-- Invalid Traits: {invalid_traits}
-
-The data being analyzed is confirmed to be from Set 15, patch 15.3+ matches only.
-
-**REAL MATCH DATA SUMMARY:**
-{match_summary}
-
-❌ **This analysis cannot be trusted for gameplay decisions.**"""
-            else:
-                print("✅ Validation passed: No hallucinated content detected")
-            
             state["extracted_comps"] = analysis
-            print("Completed composition extraction with validation")
+            print("Completed composition extraction")
         except Exception as e:
             print(f"Error extracting Set 15 compositions: {e}")
             state["extracted_comps"] = "Error extracting compositions"
@@ -422,29 +305,17 @@ For detailed performance analysis, please ensure recent match data is available.
         
         current_patch = getattr(self.settings, 'current_patch', '15.17')
         
-        # Get dynamic validation requirements
-        validator = await self.validation_manager.get_validator(current_patch)
-        if validator:
-            validation_prompt = validator.get_validation_prompt()
-        else:
-            # Fallback to static validation
-            validation_prompt = get_set15_validation_prompt()
-        
         prompt = f"""
         Based on the Set 15 compositions extracted, analyze performance patterns for patch {current_patch}+:
-        
-        {validation_prompt}
         
         Composition Analysis: {state["extracted_comps"]}
         
         Performance Questions:
-        1. Which SPECIFIC UNITS show the highest carry potential and consistency?
-        2. What trait combinations with NAMED CHAMPIONS are most reliable?
-        3. How do Power Snax choices on SPECIFIC UNITS affect final placement?
-        4. Which NAMED UNITS provide the best frontline/backline balance?
-        5. What economic patterns with SPECIFIC CHAMPIONS lead to success?
-        
-        CRITICAL: Only reference champions and traits from the approved Set 15 lists above.
+        1. Which specific units show the highest carry potential and consistency?
+        2. What trait combinations with named champions are most reliable?
+        3. How do Power Snax choices on specific units affect final placement?
+        4. Which named units provide the best frontline/backline balance?
+        5. What economic patterns with specific champions lead to success?
         """
         
         messages = [
@@ -454,37 +325,8 @@ For detailed performance analysis, please ensure recent match data is available.
         
         try:
             performance_analysis = await self.llm.generate(messages, max_tokens=1500)
-            
-            # Validate using dynamic validation
-            if validator:
-                validation_results = validator.validate_text(performance_analysis)
-            else:
-                validation_results = validate_analysis_text(performance_analysis)
-            
-            invalid_champions = validation_results.get("invalid_champions", validation_results.get("hallucinated_champions", []))
-            invalid_traits = validation_results.get("invalid_traits", validation_results.get("hallucinated_traits", []))
-            
-            if invalid_champions or invalid_traits:
-                print("❌ VALIDATION ERROR in performance analysis: Hallucinated content detected!")
-                if invalid_champions:
-                    print(f"   - HALLUCINATED CHAMPIONS: {invalid_champions}")
-                if invalid_traits:
-                    print(f"   - HALLUCINATED TRAITS: {invalid_traits}")
-                
-                performance_analysis = f"""🚨 **PERFORMANCE ANALYSIS ERROR: HALLUCINATED CONTENT DETECTED** 🚨
-
-The AI model generated invalid champions/traits not in Set 15:
-- Invalid Champions: {invalid_champions}
-- Invalid Traits: {invalid_traits}
-
-❌ **This performance analysis is unreliable and should not be used.**
-
-Original analysis contained hallucinated content from previous TFT sets."""
-            else:
-                print("✅ Performance analysis validation passed")
-            
             state["performance_analysis"] = performance_analysis
-            print("Completed performance analysis with validation")
+            print("Completed performance analysis")
         except Exception as e:
             print(f"Error analyzing Set 15 performance: {e}")
             state["performance_analysis"] = "Error analyzing performance"
@@ -533,18 +375,8 @@ To get detailed meta analysis based on current challenger gameplay:
         
         current_patch = getattr(self.settings, 'current_patch', '15.17')
         
-        # Get dynamic validation requirements
-        validator = await self.validation_manager.get_validator(current_patch)
-        if validator:
-            validation_prompt = validator.get_validation_prompt()
-        else:
-            # Fallback to static validation
-            validation_prompt = get_set15_validation_prompt()
-        
         prompt = f"""
         Create a TFT Set 15 meta guide based on the analysis for patch {current_patch}+:
-
-        {validation_prompt}
 
         Performance Analysis: {state["performance_analysis"]}
         Composition Analysis: {state["extracted_comps"]}
@@ -552,18 +384,16 @@ To get detailed meta analysis based on current challenger gameplay:
         Create sections for:
         
         ## PATCH {current_patch}+ META TIER LIST
-        Rank the strongest compositions with SPECIFIC UNIT NAMES and brief descriptions
+        Rank the strongest compositions with specific unit names and brief descriptions
         
         ## POWER SNAX GUIDE
-        Optimal SPECIFIC CHAMPIONS and timing for power-ups
+        Optimal champions and timing for power-ups
         
         ## POSITIONING STRATEGIES
-        Role-based positioning with NAMED UNITS for maximum effectiveness
+        Role-based positioning with named units for maximum effectiveness
         
         ## CLIMBING RECOMMENDATIONS
-        Specific advice with CHAMPION NAMES for ranking up in current meta
-        
-        CRITICAL: Every champion and trait mentioned must be from the approved Set 15 lists above.
+        Specific advice with champion names for ranking up in current meta
         """
         
         messages = [
@@ -573,50 +403,8 @@ To get detailed meta analysis based on current challenger gameplay:
         
         try:
             meta_report = await self.llm.generate(messages, max_tokens=2000)
-            
-            # Validate using dynamic validation
-            if validator:
-                validation_results = validator.validate_text(meta_report)
-            else:
-                validation_results = validate_analysis_text(meta_report)
-            
-            invalid_champions = validation_results.get("invalid_champions", validation_results.get("hallucinated_champions", []))
-            invalid_traits = validation_results.get("invalid_traits", validation_results.get("hallucinated_traits", []))
-            
-            if invalid_champions or invalid_traits:
-                patch_info = validation_results.get("patch_version", current_patch)
-                set_info = validation_results.get("set_info", f"Set {getattr(self.settings, 'current_tft_set', 15)}")
-                
-                print("❌ CRITICAL ERROR in final meta report: Hallucinated content detected!")
-                if invalid_champions:
-                    print(f"   - HALLUCINATED CHAMPIONS: {invalid_champions}")
-                if invalid_traits:
-                    print(f"   - HALLUCINATED TRAITS: {invalid_traits}")
-                
-                # Replace report with error message
-                meta_report = f"""🚨 **CRITICAL META REPORT ERROR: HALLUCINATED CONTENT DETECTED** 🚨
-
-The AI model generated champions/traits that don't exist in Set 15: K.O. Coliseum (Patch 15.3+):
-
-**HALLUCINATED CONTENT:**
-- Invalid Champions: {invalid_champions}  
-- Invalid Traits: {invalid_traits}
-
-❌ **This meta report is completely unreliable and should NOT be used for gameplay decisions.**
-
-**IMPORTANT:** The underlying match data is confirmed to be from Set 15, patch 15.3+ only. The AI model is incorrectly hallucinating content from previous sets.
-
-Please check the validation system or request a new analysis."""
-            else:
-                print("✅ Final meta report validation passed")
-                patch_info = validation_results.get("patch_version", current_patch)
-                set_info = validation_results.get("set_info", f"Set {getattr(self.settings, 'current_tft_set', 15)}")
-                # Add validation confirmation
-                validation_notice = f"✅ **Validated Content**: All champions and traits in this analysis have been verified against {patch_info} ({set_info}).\n\n---\n\n"
-                meta_report = validation_notice + meta_report
-            
             state["final_report"] = meta_report
-            print("Completed meta synthesis with validation")
+            print("Completed meta synthesis")
         except Exception as e:
             print(f"Error synthesizing Set 15 meta: {e}")
             state["final_report"] = "Error creating meta report"

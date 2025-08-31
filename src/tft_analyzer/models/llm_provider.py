@@ -60,9 +60,19 @@ class LLMClient:
         if api_key in placeholder_indicators:
             return False
         
-        # Check expected prefix
-        if not api_key.startswith(expected_prefix):
-            return False
+        # More flexible prefix checking for different API key formats
+        if expected_prefix == "sk-ant-":
+            # Anthropic keys can have different formats: sk-ant-* or sk-ant-api*
+            if not (api_key.startswith("sk-ant-") or api_key.startswith("sk-ant-api")):
+                return False
+        elif expected_prefix == "sk-":
+            # OpenAI keys: sk-* or sk-proj-*
+            if not (api_key.startswith("sk-") or api_key.startswith("sk-proj-")):
+                return False
+        else:
+            # Default exact prefix matching
+            if not api_key.startswith(expected_prefix):
+                return False
         
         # Check minimum length
         if len(api_key) < 20:
@@ -79,7 +89,13 @@ class LLMClient:
                 self.api_key, 
                 "sk-ant-" if self.provider.value == "anthropic" else "sk-"
             )):
-            raise ValueError(f"❌ Real {self.provider.value} API key required for analysis. No mock data allowed.")
+            # More detailed error message
+            if not self.api_key:
+                raise ValueError(f"❌ No {self.provider.value} API key provided. Please set the API key in your .env file.")
+            elif self.client is None:
+                raise ValueError(f"❌ Failed to initialize {self.provider.value} client. Please check your API key format.")
+            else:
+                raise ValueError(f"❌ Invalid {self.provider.value} API key format. Please check your .env file.")
         return False
     
     def _generate_mock_response(self, messages: list) -> str:
