@@ -71,116 +71,20 @@ class LLMClient:
         return True
     
     def _is_mock_mode(self) -> bool:
-        """Check if we should use mock responses"""
-        return (
-            self.client is None or 
+        """Check if we should use mock responses - DISABLED for production"""
+        # Force real API usage only - require valid keys
+        if (self.client is None or 
             not self.api_key or
             not self._is_valid_api_key(
                 self.api_key, 
                 "sk-ant-" if self.provider.value == "anthropic" else "sk-"
-            )
-        )
+            )):
+            raise ValueError(f"❌ Real {self.provider.value} API key required for analysis. No mock data allowed.")
+        return False
     
     def _generate_mock_response(self, messages: list) -> str:
-        """Generate a mock response based on the conversation context"""
-        if not messages:
-            return "Mock response: No messages provided"
-        
-        last_message = messages[-1]["content"] if messages else ""
-        
-        if "extract" in last_message.lower() and "composition" in last_message.lower():
-            return """**TFT Composition Analysis**
-
-Based on the match data, here are the key compositions identified:
-
-**Composition 1: Bastion Flex**
-- Primary Traits: Bastion (4), Prodigy (3)
-- Key Carry: Prodigy units
-- Supporting Units: Bastion frontline
-- Average Placement: 3.2
-- Items: AP items on carries, tank items on frontline
-
-**Composition 2: OldMentor Engine**
-- Primary Traits: OldMentor (3), Heavyweight (2)
-- Key Carry: Attack speed carries
-- Supporting Units: Buff providers
-- Average Placement: 4.1
-- Items: AS/AD items on carries
-
-**Performance Notes:**
-- Bastion comps showed strong consistency
-- OldMentor provided flexible scaling
-- Item optimization heavily influenced placement"""
-            
-        elif "performance" in last_message.lower() and "pattern" in last_message.lower():
-            return """**Performance Pattern Analysis**
-
-**Highest Performing Compositions:**
-1. **Bastion Prodigy** - Average placement: 3.2
-   - 75% top-4 rate
-   - Strong at levels 7-8
-   - Flexible item requirements
-
-2. **OldMentor Builds** - Average placement: 4.1  
-   - 65% top-4 rate
-   - Consistent mid-game power
-   - Less item dependent
-
-**Key Performance Insights:**
-- Compositions with defensive frontlines averaged better placement
-- Trait diversity correlated with better performance
-- Power Snax timing was crucial for success
-
-**Notable Patterns:**
-- Early defensive positioning improved consistency
-- Flexible builds outperformed rigid compositions
-- Economic management more impactful than perfect synergies"""
-            
-        elif "meta report" in last_message.lower() or "tier list" in last_message.lower():
-            return """**TFT Meta Report & Strategic Guide**
-
-## **TIER LIST**
-
-**S-Tier (Consistent Top 4)**
-- Bastion Prodigy Flex
-- OldMentor Engine builds
-
-**A-Tier (Strong with proper execution)**  
-- Empyrean Sniper comps
-- DragonFist Duelist builds
-
-**B-Tier (Situational strength)**
-- BattleAcademia utility builds
-- Off-meta combinations
-
-## **RECOMMENDATIONS BY SKILL LEVEL**
-
-**Beginner Players:**
-- Focus on Bastion builds (forgiving, consistent)
-- Prioritize defensive Power Snax early
-- Don't force contested compositions
-
-**Intermediate Players:** 
-- Learn OldMentor transitions
-- Master Power Snax timing
-- Practice flexible positioning
-
-**Advanced Players:**
-- Perfect late-game scaling decisions
-- Master complex positioning adjustments
-- Optimize Power Snax for maximum impact
-
-## **EMERGING TRENDS**
-- Defensive early game becoming more valuable
-- Power Snax timing showing significant impact on placement
-- Flexible compositions outperforming rigid builds
-
-## **SPECIFIC RECOMMENDATIONS**
-- **Items:** Prioritize defensive items early, carry items mid-game
-- **Positioning:** Standard formation works in 85% of cases
-- **Economy:** Maintain thresholds while building synergies"""
-        else:
-            return f"Analysis response for: {last_message[:100]}..."
+        """Generate a mock response - DISABLED in production"""
+        raise ValueError("❌ Mock responses disabled. Real API key required for all analysis.")
     
     async def generate(self, messages: list, **kwargs) -> str:
         """Generate response from LLM or return mock data"""

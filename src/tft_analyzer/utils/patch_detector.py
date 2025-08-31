@@ -19,23 +19,43 @@ class TFTPatchDetector:
         """Get current patch, set number, and set name"""
         print("🔍 Detecting current TFT patch...")
         
-        # Try multiple methods to get patch info
-        patch_info = await self._get_patch_from_patch_notes()
+        # Try multiple methods and collect all results
+        all_results = []
         
-        if not patch_info.get("patch"):
-            patch_info = await self._get_patch_from_meta_sites()
+        # Method 1: Official patch notes
+        official_info = await self._get_patch_from_patch_notes()
+        if official_info.get("patch"):
+            all_results.append(official_info)
         
-        # Fallback to reasonable defaults if detection fails
-        if not patch_info.get("patch"):
+        # Method 2: Meta sites
+        meta_info = await self._get_patch_from_meta_sites()
+        if meta_info.get("patch"):
+            all_results.append(meta_info)
+        
+        # Choose the best result - prioritize Set 15 patches and higher versions
+        if all_results:
+            # Filter for Set 15 patches first
+            set_15_results = [r for r in all_results if r.get("patch", "").startswith("15.")]
+            
+            if set_15_results:
+                # Pick the highest 15.x patch
+                patch_info = max(set_15_results, key=lambda x: [int(i) for i in x["patch"].split(".")])
+                print(f"✅ Selected Set 15 patch: {patch_info['patch']} from {patch_info['detection_method']}")
+            else:
+                # Fall back to highest overall patch
+                patch_info = max(all_results, key=lambda x: [int(i) for i in x["patch"].split(".")])
+                print(f"✅ Selected highest patch: {patch_info['patch']} from {patch_info['detection_method']}")
+        else:
+            # Fallback to reasonable defaults if all detection fails
             print("⚠️ Could not detect current patch, using defaults")
             patch_info = {
-                "patch": "14.24",  # Updated to match your current data
+                "patch": "15.3",  # Current TFT Set 15 patch (released 2025/08/26)
                 "set_number": 15,
                 "set_name": "K.O. Coliseum",
                 "detection_method": "fallback"
             }
         
-        print(f"✅ Detected: Patch {patch_info['patch']}, Set {patch_info['set_number']} ({patch_info['set_name']})")
+        print(f"✅ Final: Patch {patch_info['patch']}, Set {patch_info['set_number']} ({patch_info['set_name']})")
         return patch_info
     
     async def _get_patch_from_patch_notes(self) -> Dict[str, Any]:
@@ -132,15 +152,20 @@ class TFTPatchDetector:
                                 found_patches.extend(matches)
                             
                             if found_patches:
-                                # Filter for reasonable TFT patch numbers (typically 14.x or 15.x)
-                                valid_patches = [p for p in found_patches if p.startswith(('14.', '15.'))]
+                                # Filter for reasonable TFT patch numbers (typically 15.x for current set)
+                                valid_patches = [p for p in found_patches if p.startswith(('15.', '14.'))]
                                 
                                 if valid_patches:
-                                    latest_patch = max(valid_patches, key=lambda x: [int(i) for i in x.split('.')])
-                                    
-                                    # Determine set based on patch
-                                    set_number = 15 if latest_patch.startswith('15.') else 14
-                                    set_name = "K.O. Coliseum" if set_number == 15 else "Cyber City"
+                                    # Prioritize 15.x patches (current set)
+                                    set_15_patches = [p for p in valid_patches if p.startswith('15.')]
+                                    if set_15_patches:
+                                        latest_patch = max(set_15_patches, key=lambda x: [int(i) for i in x.split('.')])
+                                        set_number = 15
+                                        set_name = "K.O. Coliseum"
+                                    else:
+                                        latest_patch = max(valid_patches, key=lambda x: [int(i) for i in x.split('.')])
+                                        set_number = 15 if latest_patch.startswith('15.') else 14
+                                        set_name = "K.O. Coliseum" if set_number == 15 else "Cyber City"
                                     
                                     return {
                                         "patch": latest_patch,
@@ -251,7 +276,7 @@ class TFTPatchDetector:
         if not patch_info.get("patch"):
             print("⚠️ All detection methods failed, using fallback")
             patch_info = {
-                "patch": "14.24",
+                "patch": "15.3",
                 "set_number": 15,
                 "set_name": "K.O. Coliseum",
                 "detection_method": "fallback"
@@ -269,7 +294,7 @@ class TFTPatchDetector:
         """Validate and clean up patch info"""
         # Ensure all required fields exist
         defaults = {
-            "patch": "14.24",
+            "patch": "15.3",
             "set_number": 15,
             "set_name": "K.O. Coliseum",
             "detection_method": "fallback"

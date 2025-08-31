@@ -20,9 +20,10 @@ TFT Composition Analyzer is an AI-powered analysis tool for Teamfight Tactics (T
   - Located in `src/tft_analyzer/models/llm_provider.py`
   - Handles API key validation and model selection
 
-- **Riot API Integration**: Async client for TFT data with rate limiting and mock support
+- **Riot API Integration**: Async client for TFT data with rate limiting
   - Located in `src/tft_analyzer/data/riot_api.py`
   - Includes Set 15 filtering and patch detection
+  - Requires valid Riot API key (no mock data fallbacks)
 
 - **Configuration Management**: Pydantic-based settings with environment variable loading
   - Located in `config/settings.py`
@@ -79,10 +80,11 @@ uv run pytest -v tests/ -k async
 
 ### Debugging Scripts
 The repository includes several debugging utilities:
-- `test_anthropic.py` - Test LLM provider connections
-- `test_rate_limits.py` - Test Riot API rate limiting
-- `debug_api_structure.py` - Explore API response structure
-- `simple_working_test.py` - Basic functionality verification
+- `scripts/tests/test_anthropic.py` - Test LLM provider connections
+- `scripts/tests/test_rate_limits.py` - Test Riot API rate limiting
+- `scripts/debug/debug_api_structure.py` - Explore API response structure
+- `scripts/debug/simple_working_test.py` - Basic functionality verification
+- `scripts/test_patch_filtering.py` - Test patch 15.3+ and 24h filtering
 
 ## Key Configuration
 
@@ -92,6 +94,9 @@ The repository includes several debugging utilities:
 - `OPENAI_API_KEY`: OpenAI API key (alternative LLM provider)
 - `LLM_PROVIDER`: "anthropic" or "openai"
 - `RIOT_REGION`: "euw1" (Europe West)
+- `REQUIRE_PATCH_15_3`: "true" to only analyze patch 15.3+ matches (default: true)
+- `USE_24H_FILTER`: "true" to only get matches from last 24 hours (default: false)
+- `USE_CACHE`: "true" to enable API response caching for development (default: false)
 
 ### Development Settings
 The application is optimized for Development API key constraints:
@@ -99,13 +104,26 @@ The application is optimized for Development API key constraints:
 - Limited players: 3 challenger players maximum
 - Limited matches: 3 matches per player, 2 processed for Set 15
 - Target data: 10 Set 15 matches total
+- **Patch filtering**: Only analyzes matches from patch 15.3+ (released 2025/08/26)
+- **Optional 24h filtering**: Can limit to matches from last 24 hours only
+- **API Caching**: Optional caching system to avoid rate limits during development
+
+### Caching System
+For development convenience, the application includes an optional caching system:
+- **Cache Location**: `cache/riot_api/` directory
+- **Cache Duration**: Challenger players (1h), Match history (30m), Match details (24h)
+- **Streamlit Controls**: Enable/disable caching and clear cache via UI
+- **Smart Expiration**: Automatically ignores expired cache files
+- **Filter Preservation**: Cached data still respects Set 15 and patch 15.3+ filtering
 
 ### Set 15 Specifics
 Current configuration targets:
 - **Set Number**: 15 (K.O. Coliseum)
-- **Current Patch**: 15.17 (auto-detected)
+- **Current Patch**: 15.3+ (released 2025/08/26)
 - **Key Features**: Power Snax system, Role-based gameplay, 3-star 5-cost mechanics
-- **Match Filtering**: Only analyzes matches from Set 15
+- **Match Filtering**: Only analyzes matches from Set 15, patch 15.3+
+- **Date Filtering**: Only includes matches from 2025/08/26 onwards
+- **Time Filtering**: Optional 24-hour window for most recent matches
 
 ## Import Structure
 
@@ -123,10 +141,13 @@ except ImportError:
 
 The application includes comprehensive error handling for:
 - API rate limiting and connection failures
-- Missing or invalid API keys (graceful fallback to mock mode)
+- Missing or invalid API keys (raises clear error messages)
 - Set filtering (skips non-Set 15 matches)
+- Patch filtering (skips pre-15.3 matches)
 - LLM request failures with retry logic
 
-## Mock Mode
+## Testing
 
-When API keys are missing or invalid, the application automatically uses mock data that simulates realistic TFT Set 15 match structures, allowing development without external dependencies.
+The application requires a valid Riot API key for all operations. For testing LLM functionality without API access:
+- Use `scripts/test_llm_with_mock_data.py` for LLM provider testing with mock Set 15 data
+- Mock data is only available in the separate test script, not in the main application
