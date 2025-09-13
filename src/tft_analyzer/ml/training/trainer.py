@@ -25,11 +25,11 @@ from optuna.trial import Trial
 try:
     from .data_collector import TrainingDataPoint, TFTTrainingDataCollector
     from ..models.strategy_model import TFTStrategyModel
-    from ...config.settings import Settings
+    from config.settings import Settings
 except ImportError:
     from src.tft_analyzer.ml.training.data_collector import TrainingDataPoint, TFTTrainingDataCollector
     from src.tft_analyzer.ml.models.strategy_model import TFTStrategyModel
-    from src.tft_analyzer.config.settings import Settings
+    from config.settings import Settings
 
 
 class TFTModelTrainer:

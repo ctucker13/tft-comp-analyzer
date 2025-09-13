@@ -18,11 +18,11 @@ from pydantic import BaseModel
 try:
     from ..data.schemas import TFTGameState, TFTModelPredictions
     from ...data.riot_api import RiotTFTAPI
-    from ...config.settings import Settings
+    from config.settings import Settings
 except ImportError:
     from src.tft_analyzer.ml.data.schemas import TFTGameState, TFTModelPredictions
     from src.tft_analyzer.data.riot_api import RiotTFTAPI
-    from src.tft_analyzer.config.settings import Settings
+    from config.settings import Settings
 
 
 class TrainingDataPoint(BaseModel):
