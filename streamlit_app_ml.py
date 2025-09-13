@@ -23,6 +23,8 @@ from src.tft_analyzer.models.llm_provider import LLMClient
 from src.tft_analyzer.data.riot_api import RiotTFTAPI
 from src.tft_analyzer.agents.ml_strategist import MLStrategistAgent
 from src.tft_analyzer.ml.inference.engine import TFTInferenceEngine
+from src.tft_analyzer.ml.training.data_collector import TFTTrainingDataCollector
+from src.tft_analyzer.ml.training.trainer import TFTModelTrainer
 
 
 def initialize_settings():
@@ -300,51 +302,241 @@ def main():
         st.header("🔧 ML Model Training")
         st.markdown("*Manage ML model training and data collection*")
 
-        # Training Status
-        model_path = Path("data/models/strategy_v1")
-        if model_path.exists():
-            st.success("✅ Trained model available")
-            st.info(f"Model location: {model_path}")
+        # Initialize training session state
+        if 'training_status' not in st.session_state:
+            st.session_state.training_status = None
+        if 'collection_status' not in st.session_state:
+            st.session_state.collection_status = None
+        if 'training_results' not in st.session_state:
+            st.session_state.training_results = None
+
+        # Model Status
+        models_dir = Path("models")
+        existing_models = []
+        if models_dir.exists():
+            existing_models = [d for d in models_dir.iterdir() if d.is_dir()]
+
+        if existing_models:
+            st.success(f"✅ Found {len(existing_models)} trained model(s)")
+            latest_model = max(existing_models, key=os.path.getmtime)
+            st.info(f"Latest model: {latest_model.name}")
+
+            # Model details
+            config_path = latest_model / "config.json"
+            if config_path.exists():
+                import json
+                with open(config_path, 'r') as f:
+                    config = json.load(f)
+
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Features", config.get('feature_count', 'N/A'))
+                with col2:
+                    st.metric("Placement MSE", f"{config.get('evaluation_metrics', {}).get('placement_mse', 0):.3f}")
+                with col3:
+                    st.metric("Comp Accuracy", f"{config.get('evaluation_metrics', {}).get('comp_type_accuracy', 0):.1%}")
         else:
-            st.warning("⚠️ No trained model found")
+            st.warning("⚠️ No trained models found")
 
         st.subheader("📊 Data Collection")
 
         col1, col2 = st.columns(2)
-
         with col1:
-            target_games = st.number_input("Target Games", min_value=10, max_value=1000, value=100)
-            max_players = st.number_input("Max Players", min_value=5, max_value=200, value=50)
-
+            target_matches = st.number_input("Target Matches", min_value=10, max_value=500, value=50)
+            min_rank = st.selectbox("Minimum Rank", ["CHALLENGER", "GRANDMASTER", "MASTER"], index=2)
         with col2:
-            days_back = st.number_input("Days Back", min_value=1, max_value=30, value=7)
+            days_back = st.number_input("Days Back", min_value=1, max_value=14, value=3)
 
-        if st.button("🎯 Collect Training Data"):
-            st.info("Data collection would start here. This requires implementing the training pipeline.")
-            st.code(f"python scripts/training/train_model.py --collect-data --target-games {target_games} --max-players {max_players} --days-back {days_back}")
+        # Data collection status
+        training_data_dir = Path("data/training")
+        if training_data_dir.exists():
+            training_files = list(training_data_dir.glob("*.json"))
+            if training_files:
+                st.info(f"📁 {len(training_files)} training data file(s) available")
+        else:
+            st.warning("No training data found")
+
+        if st.button("🎯 Collect Training Data", key="collect_data"):
+            if not ml_components:
+                st.error("ML components not initialized. Check your API keys.")
+            else:
+                st.session_state.collection_status = "running"
+
+                with st.spinner(f"Collecting training data from {min_rank}+ players..."):
+                    try:
+                        # Create data collector
+                        collector = TFTTrainingDataCollector(settings)
+
+                        # Run data collection in event loop
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+
+                        training_data = loop.run_until_complete(
+                            collector.collect_training_data(
+                                num_matches=target_matches,
+                                min_rank=min_rank,
+                                days_back=days_back
+                            )
+                        )
+
+                        # Save collected data
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        filename = f"training_data_{timestamp}"
+                        collector.save_training_data(training_data, filename)
+
+                        st.session_state.collection_status = "completed"
+                        st.success(f"✅ Collected {len(training_data)} training data points!")
+                        st.info(f"Data saved as: {filename}.json")
+
+                        # Show data summary
+                        if training_data:
+                            st.subheader("📊 Data Summary")
+
+                            # Basic stats
+                            placements = [point.placement for point in training_data]
+                            comp_types = [point.comp_type for point in training_data]
+
+                            col1, col2, col3 = st.columns(3)
+                            with col1:
+                                st.metric("Total Samples", len(training_data))
+                            with col2:
+                                st.metric("Avg Placement", f"{sum(placements)/len(placements):.1f}")
+                            with col3:
+                                st.metric("Unique Comps", len(set(comp_types)))
+
+                            # Comp type distribution
+                            import pandas as pd
+                            comp_df = pd.DataFrame({'comp_type': comp_types})
+                            st.bar_chart(comp_df['comp_type'].value_counts())
+
+                        loop.close()
+
+                    except Exception as e:
+                        st.session_state.collection_status = "error"
+                        st.error(f"Data collection failed: {e}")
+                        if 'loop' in locals():
+                            loop.close()
 
         st.subheader("🧠 Model Training")
 
-        if st.button("🚀 Train New Model"):
-            st.info("Model training would start here. This requires collected data.")
-            st.code("python scripts/training/train_model.py --train")
+        col1, col2 = st.columns(2)
+        with col1:
+            epochs = st.number_input("Training Epochs", min_value=10, max_value=500, value=100)
+            batch_size = st.selectbox("Batch Size", [16, 32, 64, 128], index=1)
+        with col2:
+            learning_rate = st.selectbox("Learning Rate", [0.0001, 0.001, 0.01], index=1)
+            optimize_hyperparams = st.checkbox("Optimize Hyperparameters", value=True)
 
-        # Data status
-        st.subheader("📈 Data Status")
+        if st.button("🚀 Train New Model", key="train_model"):
+            if not ml_components:
+                st.error("ML components not initialized. Check your API keys.")
+            else:
+                st.session_state.training_status = "running"
 
-        raw_data_dir = Path("data/raw")
-        if raw_data_dir.exists():
-            raw_files = list(raw_data_dir.glob("*.json"))
-            st.info(f"Raw data files: {len(raw_files)}")
-        else:
-            st.warning("No raw data directory found")
+                with st.spinner("Training ML model... This may take several minutes."):
+                    try:
+                        # Create trainer
+                        trainer = TFTModelTrainer(settings)
 
-        processed_data_dir = Path("data/processed")
-        if processed_data_dir.exists():
-            processed_files = list(processed_data_dir.glob("*.json"))
-            st.info(f"Processed training files: {len(processed_files)}")
-        else:
-            st.warning("No processed data directory found")
+                        # Start training in event loop
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+
+                        # Generate model name with timestamp
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        model_name = f"tft_strategy_{timestamp}"
+
+                        training_results = loop.run_until_complete(
+                            trainer.train_model(
+                                model_name=model_name,
+                                epochs=epochs,
+                                batch_size=batch_size,
+                                learning_rate=learning_rate,
+                                optimize_hyperparams=optimize_hyperparams
+                            )
+                        )
+
+                        st.session_state.training_status = "completed"
+                        st.session_state.training_results = training_results
+
+                        st.success("✅ Model training completed!")
+
+                        # Display training results
+                        st.subheader("📈 Training Results")
+
+                        col1, col2, col3, col4 = st.columns(4)
+                        metrics = training_results['evaluation_metrics']
+
+                        with col1:
+                            st.metric("Training Samples", training_results['training_samples'])
+                        with col2:
+                            st.metric("Test Samples", training_results['test_samples'])
+                        with col3:
+                            st.metric("Placement MSE", f"{metrics['placement_mse']:.3f}")
+                        with col4:
+                            st.metric("Comp Accuracy", f"{metrics['comp_type_accuracy']:.1%}")
+
+                        # Show hyperparameters
+                        st.subheader("⚙️ Final Hyperparameters")
+                        st.json(training_results['hyperparameters'])
+
+                        # Training history chart
+                        if 'training_history' in training_results:
+                            history = training_results['training_history']
+                            if history.get('val_loss'):
+                                st.subheader("📊 Training History")
+
+                                import pandas as pd
+                                history_df = pd.DataFrame({
+                                    'Epoch': range(0, len(history['val_loss']) * 10, 10),
+                                    'Validation Loss': history['val_loss'],
+                                    'Comp Type Accuracy': history['comp_type_acc']
+                                })
+
+                                st.line_chart(history_df.set_index('Epoch')[['Validation Loss']])
+                                st.line_chart(history_df.set_index('Epoch')[['Comp Type Accuracy']])
+
+                        st.info(f"Model saved as: {model_name}")
+                        st.rerun()  # Refresh to show new model
+
+                        loop.close()
+
+                    except Exception as e:
+                        st.session_state.training_status = "error"
+                        st.error(f"Model training failed: {e}")
+                        if 'loop' in locals():
+                            loop.close()
+
+        # Show previous training results if available
+        if st.session_state.training_results:
+            st.subheader("📋 Last Training Session")
+            results = st.session_state.training_results
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write("**Model Name:**", results['model_name'])
+                st.write("**Completed:**", results['training_completed'][:19])
+            with col2:
+                metrics = results['evaluation_metrics']
+                st.write("**Placement MSE:**", f"{metrics['placement_mse']:.3f}")
+                st.write("**Comp Accuracy:**", f"{metrics['comp_type_accuracy']:.1%}")
+
+        # Data Management
+        st.subheader("📁 Data Management")
+
+        if st.button("🧹 Clear Training Data"):
+            if training_data_dir.exists():
+                import shutil
+                shutil.rmtree(training_data_dir)
+                st.success("Training data cleared!")
+                st.rerun()
+
+        if st.button("🗑️ Clear Models"):
+            if models_dir.exists():
+                import shutil
+                shutil.rmtree(models_dir)
+                st.success("All models cleared!")
+                st.rerun()
 
     # Footer
     st.markdown("---")
