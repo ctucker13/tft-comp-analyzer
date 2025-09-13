@@ -17,11 +17,11 @@ from pydantic import BaseModel
 
 try:
     from ..data.schemas import TFTGameState, TFTModelPredictions
-    from ...data.riot_api import TFTAnalyzerClient
+    from ...data.riot_api import RiotTFTAPI
     from ...config.settings import Settings
 except ImportError:
     from src.tft_analyzer.ml.data.schemas import TFTGameState, TFTModelPredictions
-    from src.tft_analyzer.data.riot_api import TFTAnalyzerClient
+    from src.tft_analyzer.data.riot_api import RiotTFTAPI
     from src.tft_analyzer.config.settings import Settings
 
 
@@ -58,7 +58,7 @@ class TFTTrainingDataCollector:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.riot_client = TFTAnalyzerClient(settings)
+        self.riot_client = RiotTFTAPI(settings.riot_api_key, settings.riot_region, use_cache=True)
         self.logger = logging.getLogger(__name__)
 
         # Training data storage
