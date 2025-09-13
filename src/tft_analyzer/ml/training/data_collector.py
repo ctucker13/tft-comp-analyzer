@@ -320,16 +320,40 @@ class TFTTrainingDataCollector:
         return actions
 
     def _classify_comp_type(self, traits: List[Dict], units: List[Dict]) -> str:
-        """Classify the composition type."""
-        # Simplified classification
-        max_cost = max([u.get("rarity", 1) for u in units] + [1])
+        """Classify the composition type based on multiple factors."""
+        if not units:
+            return "unknown"
 
-        if max_cost >= 4:
-            return "fast_8"
-        elif any(u.get("tier", 1) == 3 for u in units):
+        # Get unit costs and tiers
+        unit_costs = [u.get("rarity", 1) for u in units]
+        unit_tiers = [u.get("tier", 1) for u in units]
+
+        # Count units by cost
+        cost_counts = {}
+        for cost in unit_costs:
+            cost_counts[cost] = cost_counts.get(cost, 0) + 1
+
+        # Count 3-star units
+        three_star_count = sum(1 for tier in unit_tiers if tier == 3)
+
+        # Count high-cost units (4+ cost)
+        high_cost_count = sum(1 for cost in unit_costs if cost >= 4)
+
+        # Classification logic
+        if three_star_count >= 2:
             return "reroll"
-        else:
+        elif three_star_count >= 1 and cost_counts.get(1, 0) >= 3:
+            return "reroll"
+        elif high_cost_count >= 3:
+            return "fast_8"
+        elif cost_counts.get(5, 0) >= 2:
+            return "fast_9"
+        elif high_cost_count >= 1 and cost_counts.get(2, 0) + cost_counts.get(3, 0) >= 4:
             return "midrange"
+        elif cost_counts.get(1, 0) + cost_counts.get(2, 0) >= 5:
+            return "econ_reroll"
+        else:
+            return "flex"
 
     def _extract_items(self, units: List[Dict]) -> List[str]:
         """Extract items built."""

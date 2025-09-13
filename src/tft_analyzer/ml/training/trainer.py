@@ -89,10 +89,63 @@ class TFTModelTrainer:
         # Preprocess data
         X, y = self._preprocess_training_data(training_data)
 
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42, stratify=y['placement_category']
-        )
+        # Split data - handle small datasets and lack of diversity
+        try:
+            # Check if we can stratify - need at least 2 samples per category
+            unique_categories, counts = np.unique(y['placement_category'], return_counts=True)
+            can_stratify = all(count >= 2 for count in counts) and len(unique_categories) > 1
+
+            if can_stratify:
+                # Use all labels for stratification
+                labels_for_split = list(zip(
+                    y['placement'],
+                    y['comp_type'],
+                    y['risk_level'],
+                    y['placement_category']
+                ))
+
+                X_train, X_test, y_labels_train, y_labels_test = train_test_split(
+                    X, labels_for_split, test_size=0.2, random_state=42,
+                    stratify=y['placement_category']
+                )
+
+                # Reconstruct y dictionaries
+                y_train = {
+                    'placement': np.array([label[0] for label in y_labels_train], dtype=np.float32),
+                    'comp_type': np.array([label[1] for label in y_labels_train], dtype=np.int64),
+                    'risk_level': np.array([label[2] for label in y_labels_train], dtype=np.float32)
+                }
+
+                y_test = {
+                    'placement': np.array([label[0] for label in y_labels_test], dtype=np.float32),
+                    'comp_type': np.array([label[1] for label in y_labels_test], dtype=np.int64),
+                    'risk_level': np.array([label[2] for label in y_labels_test], dtype=np.float32)
+                }
+
+            else:
+                raise ValueError("Cannot stratify - insufficient diversity")
+
+        except ValueError as e:
+            # Fallback to simple split if stratification fails
+            self.logger.warning(f"Stratification failed ({e}), using simple split")
+
+            # Simple split without stratification
+            test_size = max(1, int(0.2 * len(X)))  # At least 1 test sample
+            split_idx = len(X) - test_size
+
+            X_train, X_test = X[:split_idx], X[split_idx:]
+
+            y_train = {
+                'placement': y['placement'][:split_idx],
+                'comp_type': y['comp_type'][:split_idx],
+                'risk_level': y['risk_level'][:split_idx]
+            }
+
+            y_test = {
+                'placement': y['placement'][split_idx:],
+                'comp_type': y['comp_type'][split_idx:],
+                'risk_level': y['risk_level'][split_idx:]
+            }
 
         # Optimize hyperparameters if requested
         if optimize_hyperparams:
@@ -101,7 +154,6 @@ class TFTModelTrainer:
         else:
             best_params = {
                 'hidden_dim': 256,
-                'num_layers': 3,
                 'dropout': 0.3,
                 'learning_rate': learning_rate
             }
@@ -214,7 +266,6 @@ class TFTModelTrainer:
             # Suggest hyperparameters
             params = {
                 'hidden_dim': trial.suggest_int('hidden_dim', 64, 512, step=64),
-                'num_layers': trial.suggest_int('num_layers', 2, 5),
                 'dropout': trial.suggest_float('dropout', 0.1, 0.5),
                 'learning_rate': trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
             }
@@ -266,10 +317,23 @@ class TFTModelTrainer:
         model = TFTStrategyModel(
             input_dim=input_dim,
             hidden_dim=params['hidden_dim'],
-            num_layers=params['num_layers'],
             dropout=params['dropout'],
-            num_comp_types=num_comp_types
+            use_attention=True
         ).to(self.device)
+
+        # Fix the comp_head to have the right number of outputs
+        import torch.nn as nn
+        # The encoder outputs hidden_dim // 2 dimensions
+        encoder_output_dim = params['hidden_dim'] // 2
+        model.comp_head = nn.Sequential(
+            nn.Linear(encoder_output_dim, encoder_output_dim // 2),
+            nn.ReLU(),
+            nn.Dropout(params['dropout'] / 2),
+            nn.Linear(encoder_output_dim // 2, num_comp_types)
+        ).to(self.device)
+
+        # Store num_comp_types for reference
+        model.num_comp_types = num_comp_types
 
         # Setup training
         optimizer = optim.Adam(model.parameters(), lr=params['learning_rate'])
@@ -305,10 +369,11 @@ class TFTModelTrainer:
             # Forward pass
             outputs = model(X_train_tensor)
 
-            # Calculate losses
-            placement_loss = placement_loss_fn(outputs['placement'].squeeze(), y_placement_train)
-            comp_type_loss = comp_type_loss_fn(outputs['comp_type'], y_comp_type_train)
-            risk_loss = risk_loss_fn(outputs['risk_level'].squeeze(), y_risk_train)
+            # Calculate losses using the correct output keys
+            # Use value estimate as placement prediction and comp_logits for comp type
+            placement_loss = placement_loss_fn(outputs['value_estimate'].squeeze(), y_placement_train)
+            comp_type_loss = comp_type_loss_fn(outputs['comp_logits'], y_comp_type_train)
+            risk_loss = risk_loss_fn(outputs['risk_probs'].squeeze(), y_risk_train)
 
             # Combined loss
             total_loss = placement_loss + comp_type_loss + risk_loss
@@ -325,18 +390,18 @@ class TFTModelTrainer:
                     val_outputs = model(X_test_tensor)
 
                     val_placement_loss = placement_loss_fn(
-                        val_outputs['placement'].squeeze(), y_placement_test
+                        val_outputs['value_estimate'].squeeze(), y_placement_test
                     )
                     val_comp_type_loss = comp_type_loss_fn(
-                        val_outputs['comp_type'], y_comp_type_test
+                        val_outputs['comp_logits'], y_comp_type_test
                     )
                     val_risk_loss = risk_loss_fn(
-                        val_outputs['risk_level'].squeeze(), y_risk_test
+                        val_outputs['risk_probs'].squeeze(), y_risk_test
                     )
                     val_total_loss = val_placement_loss + val_comp_type_loss + val_risk_loss
 
                     # Calculate accuracy
-                    _, predicted = torch.max(val_outputs['comp_type'], 1)
+                    _, predicted = torch.max(val_outputs['comp_logits'], 1)
                     comp_type_acc = (predicted == y_comp_type_test).float().mean().item()
 
                     history['train_loss'].append(total_loss.item())
@@ -358,16 +423,16 @@ class TFTModelTrainer:
             outputs = model(X_test_tensor)
 
             # Placement MSE
-            placement_pred = outputs['placement'].squeeze().cpu().numpy()
+            placement_pred = outputs['value_estimate'].squeeze().cpu().numpy()
             placement_mse = mean_squared_error(y_test['placement'], placement_pred)
 
             # Comp type accuracy
-            _, comp_type_pred = torch.max(outputs['comp_type'], 1)
+            _, comp_type_pred = torch.max(outputs['comp_logits'], 1)
             comp_type_pred = comp_type_pred.cpu().numpy()
             comp_type_accuracy = accuracy_score(y_test['comp_type'], comp_type_pred)
 
             # Risk level MSE
-            risk_pred = outputs['risk_level'].squeeze().cpu().numpy()
+            risk_pred = outputs['risk_probs'].squeeze().cpu().numpy()
             risk_mse = mean_squared_error(y_test['risk_level'], risk_pred)
 
         return {
