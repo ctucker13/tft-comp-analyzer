@@ -60,7 +60,10 @@ async def debug_data_collection():
             challenger_players = await collector.riot_client.get_challenger_players()
             print(f"       Found {len(challenger_players)} challenger players")
             if challenger_players:
-                print(f"       Sample: {challenger_players[0]['summonerName']}")
+                sample_player = challenger_players[0]
+                player_name = sample_player.get('summonerName', sample_player.get('puuid', 'Unknown')[:8] + '...')
+                print(f"       Sample: {player_name}")
+                print(f"       Available fields: {list(sample_player.keys())}")
         except Exception as e:
             print(f"       Error: {e}")
             challenger_players = []
@@ -70,7 +73,10 @@ async def debug_data_collection():
             master_players = await collector.riot_client.get_master_players()
             print(f"       Found {len(master_players)} master players")
             if master_players:
-                print(f"       Sample: {master_players[0]['summonerName']}")
+                sample_player = master_players[0]
+                player_name = sample_player.get('summonerName', sample_player.get('puuid', 'Unknown')[:8] + '...')
+                print(f"       Sample: {player_name}")
+                print(f"       Available fields: {list(sample_player.keys())}")
         except Exception as e:
             print(f"       Error: {e}")
             master_players = []
@@ -85,7 +91,8 @@ async def debug_data_collection():
         # Test match history for first player
         print("5. Testing match history collection...")
         test_player = all_players[0]
-        print(f"   Testing with player: {test_player['summonerName']} ({test_player['puuid'][:8]}...)")
+        player_name = test_player.get('summonerName', test_player.get('puuid', 'Unknown')[:8] + '...')
+        print(f"   Testing with player: {player_name} ({test_player['puuid'][:8]}...)")
 
         try:
             match_ids = await collector.riot_client.get_match_history(

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 try:
     from ..data.schemas import TFTGameState, TFTModelPredictions
@@ -51,6 +51,24 @@ class TrainingDataPoint(BaseModel):
     player_level: int
     gold: int
     health: int
+
+    @field_validator('round_number', 'stage', 'player_level', 'gold', 'health', 'placement', mode='before')
+    @classmethod
+    def convert_float_to_int(cls, v):
+        """Convert float values to integers (common in Riot API responses)."""
+        if isinstance(v, float):
+            return int(round(v))
+        return v
+
+    @field_validator('level_up_round', mode='before')
+    @classmethod
+    def convert_optional_float_to_int(cls, v):
+        """Convert optional float values to integers."""
+        if v is None:
+            return v
+        if isinstance(v, float):
+            return int(round(v))
+        return v
 
 
 class TFTTrainingDataCollector:
@@ -104,8 +122,9 @@ class TFTTrainingDataCollector:
                 training_data.extend(player_matches)
                 matches_collected += len(player_matches)
 
+                player_name = player.get('summonerName', player.get('puuid', 'Unknown')[:8] + '...')
                 self.logger.info(
-                    f"Collected {len(player_matches)} matches from {player['summonerName']} "
+                    f"Collected {len(player_matches)} matches from {player_name} "
                     f"({matches_collected}/{num_matches})"
                 )
 
@@ -248,7 +267,7 @@ class TFTTrainingDataCollector:
                 stage=self._calculate_stage(match_data.get("info", {}).get("game_length", 0)),
                 player_level=target_participant.get("level", 1),
                 gold=target_participant.get("gold_left", 0),
-                health=target_participant.get("players_eliminated", 0)
+                health=100 - target_participant.get("players_eliminated", 0)  # Convert eliminated count to health
             )
 
             training_data.append(training_point)
