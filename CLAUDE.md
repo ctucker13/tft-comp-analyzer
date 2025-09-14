@@ -139,6 +139,34 @@ The application now includes ML-powered strategic recommendation tools:
 - `scripts/test_model.py` - Evaluate trained model performance
 - `scripts/results/` - Training results and model comparisons
 
+#### Real-Time 24-Hour Training System
+The application features a specialized training pipeline that uses only matches from the last 24 hours on the current patch:
+
+```bash
+# Quick daily retrain (recommended)
+uv run python scripts/quick_retrain.py
+
+# Setup 24-hour training environment
+uv run python scripts/setup_24h_training.py
+
+# Full 24-hour training pipeline
+uv run python scripts/train_model_24h.py --full-pipeline --num-matches 150
+
+# Automated retraining every 6 hours
+uv run python scripts/auto_retrain_scheduler.py --interval 6
+
+# One-time retrain with challenger data only
+uv run python scripts/auto_retrain_scheduler.py --once --rank CHALLENGER
+```
+
+**24-Hour Training Features:**
+- **Real-Time Meta**: Only uses matches from last 24 hours
+- **Current Patch Only**: Automatic patch detection and filtering
+- **High-Rank Focus**: Prioritizes Challenger/Grandmaster/Master players
+- **Quality Control**: Full lobby validation and ranked games only
+- **Automated Scheduling**: Can run continuously for always-fresh models
+- **Quick Retrain**: Fast daily updates with `quick_retrain.py`
+
 ### Meta Data Management
 The application includes comprehensive meta data management with current patch detection:
 ```bash
