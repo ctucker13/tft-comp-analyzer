@@ -2,8 +2,7 @@ import aiohttp
 import asyncio
 import re
 from typing import Optional, Dict, Any
-from datetime import datetime
-from config.settings import LLMProvider
+from datetime import datetime, date
 
 class TFTPatchDetector:
     """Automatically detects the current TFT patch and set information"""
@@ -315,5 +314,51 @@ class TFTPatchDetector:
             patch_info["set_number"] = int(patch_info["set_number"])
         except (ValueError, TypeError):
             patch_info["set_number"] = defaults["set_number"]
-        
+
         return patch_info
+
+    async def get_current_patch(self) -> str:
+        """Get just the current patch number as a string."""
+        patch_info = await self.get_current_patch_info()
+        return patch_info.get("patch", "15.4")
+
+    def get_today_date(self) -> str:
+        """Get today's date in YYYY-MM-DD format."""
+        return date.today().strftime("%Y-%m-%d")
+
+    def get_today_datetime(self) -> str:
+        """Get current datetime in YYYY-MM-DD HH:MM:SS format."""
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_patch_release_info(self) -> Dict[str, str]:
+        """Get patch release date information."""
+        # Known patch release dates for Set 15
+        patch_releases = {
+            "15.1": "2025-07-15",  # Set 15 launch
+            "15.2": "2025-08-01",
+            "15.3": "2025-08-26",  # Major balance update
+            "15.4": "2025-09-10"   # Latest patch
+        }
+
+        return patch_releases
+
+    def is_patch_current(self, patch: str, days_threshold: int = 30) -> bool:
+        """
+        Check if a given patch is still current based on release dates.
+
+        Args:
+            patch: Patch number (e.g., "15.4")
+            days_threshold: Days after which a patch is considered old
+
+        Returns:
+            True if patch is current, False if outdated
+        """
+        patch_releases = self.get_patch_release_info()
+
+        if patch not in patch_releases:
+            return False
+
+        release_date = datetime.strptime(patch_releases[patch], "%Y-%m-%d")
+        days_since_release = (datetime.now() - release_date).days
+
+        return days_since_release <= days_threshold

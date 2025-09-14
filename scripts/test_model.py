@@ -303,9 +303,14 @@ class ModelTester:
                 X_tensor = torch.FloatTensor(feature_vector).to(self.trainer.device)
                 outputs = model(X_tensor)
 
-                placement_pred = outputs['placement'].squeeze().cpu().numpy()
-                comp_type_pred = torch.max(outputs['comp_type'], 1)[1].cpu().numpy()
-                risk_pred = outputs['risk_level'].squeeze().cpu().numpy()
+                placement_pred = outputs['value_estimate'].squeeze().cpu().numpy()
+                # Clamp comp_type predictions to valid range for label encoder
+                comp_logits = outputs['comp_logits']
+                if 'comp_type' in self.trainer.label_encoders:
+                    n_classes = len(self.trainer.label_encoders['comp_type'].classes_)
+                    comp_logits = comp_logits[:, :n_classes]  # Only use the classes the encoder knows
+                comp_type_pred = torch.max(comp_logits, 1)[1].cpu().numpy()
+                risk_pred = outputs['pivot_urgency'].squeeze().cpu().numpy()
 
             # Decode predictions
             comp_type_name = None
@@ -315,9 +320,9 @@ class ModelTester:
             results[scenario['name']] = {
                 'features': features,
                 'predictions': {
-                    'placement': float(placement_pred[0]),
+                    'placement': float(placement_pred.item() if placement_pred.ndim == 0 else placement_pred[0]),
                     'comp_type': comp_type_name,
-                    'risk_level': float(risk_pred[0])
+                    'risk_level': float(risk_pred.item() if risk_pred.ndim == 0 else risk_pred[0])
                 }
             }
 

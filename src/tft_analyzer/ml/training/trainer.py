@@ -89,6 +89,9 @@ class TFTModelTrainer:
         # Preprocess data
         X, y = self._preprocess_training_data(training_data)
 
+        # Store total number of comp types from full dataset (before splitting)
+        total_comp_types = len(np.unique(y['comp_type']))
+
         # Split data - handle small datasets and lack of diversity
         try:
             # Check if we can stratify - need at least 2 samples per category
@@ -149,7 +152,7 @@ class TFTModelTrainer:
 
         # Optimize hyperparameters if requested
         if optimize_hyperparams:
-            best_params = self._optimize_hyperparameters(X_train, y_train, X_test, y_test)
+            best_params = self._optimize_hyperparameters(X_train, y_train, X_test, y_test, total_comp_types)
             self.logger.info(f"Best hyperparameters: {best_params}")
         else:
             best_params = {
@@ -161,7 +164,7 @@ class TFTModelTrainer:
         # Train final model with best parameters
         model, training_history = self._train_model_with_params(
             X_train, y_train, X_test, y_test,
-            best_params, epochs, batch_size
+            best_params, epochs, batch_size, total_comp_types
         )
 
         # Evaluate model
@@ -257,6 +260,7 @@ class TFTModelTrainer:
         y_train: Dict[str, np.ndarray],
         X_test: np.ndarray,
         y_test: Dict[str, np.ndarray],
+        total_comp_types: int,
         n_trials: int = 20
     ) -> Dict[str, Any]:
         """Optimize hyperparameters using Optuna."""
@@ -273,7 +277,7 @@ class TFTModelTrainer:
             # Train model with these parameters
             model, _ = self._train_model_with_params(
                 X_train, y_train, X_test, y_test,
-                params, epochs=20, batch_size=32
+                params, epochs=20, batch_size=32, total_comp_types=total_comp_types
             )
 
             # Evaluate on validation set
@@ -306,13 +310,14 @@ class TFTModelTrainer:
         y_test: Dict[str, np.ndarray],
         params: Dict[str, Any],
         epochs: int,
-        batch_size: int
+        batch_size: int,
+        total_comp_types: int
     ) -> Tuple[TFTStrategyModel, Dict[str, List[float]]]:
         """Train model with specific parameters."""
 
         # Create model
         input_dim = X_train.shape[1]
-        num_comp_types = len(np.unique(y_train['comp_type']))
+        num_comp_types = total_comp_types  # Use total from full dataset
 
         model = TFTStrategyModel(
             input_dim=input_dim,
@@ -341,7 +346,7 @@ class TFTModelTrainer:
         # Loss functions
         placement_loss_fn = nn.MSELoss()
         comp_type_loss_fn = nn.CrossEntropyLoss()
-        risk_loss_fn = nn.MSELoss()
+        risk_loss_fn = nn.MSELoss()  # We'll need to handle this differently
 
         # Training history
         history = {
@@ -373,7 +378,8 @@ class TFTModelTrainer:
             # Use value estimate as placement prediction and comp_logits for comp type
             placement_loss = placement_loss_fn(outputs['value_estimate'].squeeze(), y_placement_train)
             comp_type_loss = comp_type_loss_fn(outputs['comp_logits'], y_comp_type_train)
-            risk_loss = risk_loss_fn(outputs['risk_probs'].squeeze(), y_risk_train)
+            # Use pivot_urgency from regression outputs as a proxy for risk level
+            risk_loss = risk_loss_fn(outputs['pivot_urgency'].squeeze(), y_risk_train)
 
             # Combined loss
             total_loss = placement_loss + comp_type_loss + risk_loss
@@ -396,7 +402,7 @@ class TFTModelTrainer:
                         val_outputs['comp_logits'], y_comp_type_test
                     )
                     val_risk_loss = risk_loss_fn(
-                        val_outputs['risk_probs'].squeeze(), y_risk_test
+                        val_outputs['pivot_urgency'].squeeze(), y_risk_test
                     )
                     val_total_loss = val_placement_loss + val_comp_type_loss + val_risk_loss
 
@@ -432,7 +438,7 @@ class TFTModelTrainer:
             comp_type_accuracy = accuracy_score(y_test['comp_type'], comp_type_pred)
 
             # Risk level MSE
-            risk_pred = outputs['risk_probs'].squeeze().cpu().numpy()
+            risk_pred = outputs['pivot_urgency'].squeeze().cpu().numpy()
             risk_mse = mean_squared_error(y_test['risk_level'], risk_pred)
 
         return {
@@ -453,11 +459,11 @@ class TFTModelTrainer:
 
         # Save model config
         config = {
-            'input_dim': model.input_dim,
-            'hidden_dim': model.hidden_dim,
-            'num_layers': model.num_layers,
-            'dropout': model.dropout,
-            'num_comp_types': model.num_comp_types,
+            'input_dim': len(self.feature_names),
+            'hidden_dim': params['hidden_dim'],
+            'dropout': params['dropout'],
+            'use_attention': params.get('use_attention', True),
+            'num_comp_types': getattr(model, 'num_comp_types', 2),
             'feature_names': self.feature_names,
             'hyperparameters': params,
             'evaluation_metrics': metrics,
@@ -489,13 +495,14 @@ class TFTModelTrainer:
         model = TFTStrategyModel(
             input_dim=config['input_dim'],
             hidden_dim=config['hidden_dim'],
-            num_layers=config['num_layers'],
             dropout=config['dropout'],
-            num_comp_types=config['num_comp_types']
+            use_attention=config.get('use_attention', True)
         ).to(self.device)
 
-        # Load weights
-        model.load_state_dict(torch.load(model_path / "model_weights.pt", map_location=self.device))
+        # Load weights with relaxed matching
+        saved_state = torch.load(model_path / "model_weights.pt", map_location=self.device)
+        model.load_state_dict(saved_state, strict=False)
+        self.logger.warning("Loaded model with strict=False due to architecture changes")
 
         # Load preprocessing artifacts
         import joblib

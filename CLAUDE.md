@@ -10,6 +10,12 @@ TFT Composition Analyzer is an AI-powered analysis tool for Teamfight Tactics (T
 
 ### Core Components
 
+- **TFT Agentic Model**: Intelligent agent with conversation classification and tool routing
+  - Located in `src/tft_analyzer/agents/tft_agent.py`
+  - LangGraph StateGraph with intent classification (STRATEGIC_DECISION, META_ANALYSIS, GENERAL_CHAT)
+  - Automatic tool routing: Strategic questions → ML analysis, Meta questions → Tier lists
+  - Game state extraction and context-aware responses
+
 - **LangGraph Workflow**: Multi-step agentic analysis using StateGraph with defined flow:
   1. `data_collector` → fetches challenger player data and match history
   2. `comp_extractor` → analyzes compositions using LLM
@@ -54,9 +60,41 @@ cp .env.example .env
 ```
 
 ### Running the Application
+
+**Primary Interface - TFT Strategic Chat Advisor:**
 ```bash
-# Main application entry point
+# Interactive chat mode (recommended)
+uv run python tft_chat.py
+
+# Single question mode
+uv run python tft_chat.py --query "I'm at 30 gold, level 6, what should I do?"
+
+# Show example questions
+uv run python tft_chat.py --examples
+```
+
+**Agentic Model Interface - Intelligent Tool Routing:**
+```bash
+# Interactive demo of agentic model (new)
+uv run python tft_agent_demo.py
+
+# Show conversation examples and expected tool routing
+uv run python tft_agent_demo.py --examples
+
+# Run predefined test scenarios
+# Option 1: Run example scenarios, Option 2: Interactive mode, Option 3: Show examples
+```
+
+**Advanced/Development:**
+```bash
+# Original meta analysis workflow
 uv run python -m src.tft_analyzer.main
+
+# Legacy CLI interface (deprecated)
+uv run python src/tft_analyzer/cli.py
+
+# Demo ML functionality
+uv run python demo_ml_tool.py
 
 # Force mock mode (no API keys required)
 export RIOT_API_KEY="" && uv run python -m src.tft_analyzer.main
@@ -77,6 +115,50 @@ uv run pytest
 # Run async tests specifically
 uv run pytest -v tests/ -k async
 ```
+
+### Agentic Model Usage
+The application features an intelligent agentic model with automatic tool routing:
+- `src/tft_analyzer/agents/tft_agent.py` - Core agentic model with LangGraph workflow
+- `tft_agent_demo.py` - Interactive demo and testing interface
+- `USAGE_EXAMPLES.md` - Comprehensive usage examples and conversation patterns
+- Conversation types:
+  - **Strategic Decisions**: "I'm at 30 gold, what should I do?" → ML analysis
+  - **Meta Analysis**: "What are the best comps?" → Tier lists and composition data
+  - **General Chat**: "I love TFT!" → Direct conversational response
+
+### ML Tool Usage
+The application now includes ML-powered strategic recommendation tools:
+- `src/tft_analyzer/cli.py` - Interactive CLI with ML recommendations
+- `demo_ml_tool.py` - Demonstration of ML tool call functionality
+- `src/tft_analyzer/tools/ml_recommendation_tool.py` - Core ML recommendation engine
+- `src/tft_analyzer/chat/ml_chat_interface.py` - Natural language query interface
+- `docs/ML_TOOL_USAGE.md` - Comprehensive usage guide
+
+#### ML Training and Testing
+- `scripts/train_model.py` - Train new ML models with collected data
+- `scripts/test_model.py` - Evaluate trained model performance
+- `scripts/results/` - Training results and model comparisons
+
+### Meta Data Management
+The application includes comprehensive meta data management with current patch detection:
+```bash
+# Update all TFT Set 15 meta data (champions, items, power ups, etc.)
+uv run python scripts/update_meta_data.py
+
+# Validate current meta data quality and currency
+uv run python scripts/validate_meta_data.py
+
+# Example usage of meta data system with Polars DataFrames
+uv run python examples/meta_data_usage.py
+```
+
+#### Meta Data Features
+- **Automatic patch detection** from multiple sources (official, meta sites, match data)
+- **Comprehensive data updates** including champions, traits, items, artifacts, power ups, and augments
+- **Polars DataFrame integration** for high-performance data analysis
+- **Data validation** to ensure currency and quality
+- **Multiple export formats** (JSON, Parquet, CSV)
+- **Date-aware updates** using today's date programmatically
 
 ### Debugging Scripts
 The repository includes several debugging utilities:

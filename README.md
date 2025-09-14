@@ -1,6 +1,6 @@
-# TFT Set 15: K.O. Coliseum Composition Analyzer
+# TFT Composition Analyzer
 
-An AI-powered analysis tool for Teamfight Tactics (TFT) Set 15 that uses agentic workflows to identify optimal team compositions from high-tier player gameplay data. Features a modern Streamlit web interface with real-time analysis and interactive chat.
+AI-powered strategic advisor for Teamfight Tactics (TFT) Set 15: K.O. Coliseum. Get personalized strategic advice and meta analysis through natural conversation.
 
 ## ✨ Features
 
@@ -30,59 +30,64 @@ An AI-powered analysis tool for Teamfight Tactics (TFT) Set 15 that uses agentic
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- **Python 3.11+** with UV package manager
-- **Riot Games Development API Key** ([Get one here](https://developer.riotgames.com/))
-- **Anthropic API Key** ([Claude Console](https://console.anthropic.com/)) or **OpenAI API Key**
-
-### Installation
-
 ```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/tft-comp-analyzer.git
-cd tft-comp-analyzer
-
-# Install dependencies with UV
+# Install dependencies
 uv sync
 
-# Copy and configure environment
-cp .env.example .env
+# Start the chat advisor
+uv run python tft_chat.py
 ```
 
-### Configuration
-
-Edit your `.env` file with your API keys:
-
-```env
-# Required API Keys
-RIOT_API_KEY=your_riot_development_key_here
-ANTHROPIC_API_KEY=your_anthropic_key_here
-LLM_PROVIDER=anthropic
-
-# Regional Settings
-RIOT_REGION=euw1
-
-# Set 15 Configuration
-CURRENT_TFT_SET=15
-CURRENT_PATCH=15.17
-TFT_SET_NAME=K.O. Coliseum
-
-# Analysis Preferences
-REQUIRE_PATCH_15_3=false        # Include all Set 15 matches
-USE_24H_FILTER=false            # Don't limit to last 24h
-USE_CACHE=true                  # Enable caching for development
-PRIORITIZE_WINNERS=true         # Focus on high-performing players
-```
-
-### Launch the Application
+### Example Usage
 
 ```bash
-# Start the Streamlit web interface
+# Interactive chat mode
+uv run python tft_chat.py
+
+# Single question
+uv run python tft_chat.py --query "What's the best comp to play right now?"
+
+# See examples
+uv run python tft_chat.py --examples
+```
+
+### Example Conversations
+
+**Strategic Advice:**
+```
+💬 You: I'm at 30 gold, level 6, placement 5, what should I do?
+🤖 Advisor: Based on your strong economy and mid-placement, I recommend...
+```
+
+**Meta Questions:**
+```
+💬 You: What's the current meta tier list?
+🤖 Advisor: Here's the current meta ranking based on recent match data...
+```
+
+## What Makes This Different
+
+- **Real Data Driven**: Analyzes actual Challenger/Master match data
+- **Dual ML Models**: Strategic decisions + meta analysis
+- **Conversational**: Ask questions naturally, get human-like responses
+- **Always Updated**: Tracks live meta trends and composition performance
+
+## Advanced Usage
+
+### Web Interface
+```bash
+# Start the Streamlit web interface (full features)
 uv run streamlit run streamlit_app.py
 ```
 
-Navigate to `http://localhost:8501` to access the web interface.
+### API Keys (Optional)
+For live data collection, add to `.env`:
+```env
+RIOT_API_KEY=your_riot_development_key_here
+ANTHROPIC_API_KEY=your_anthropic_key_here  # For original workflow
+```
+
+The chat advisor works with cached/sample data by default.
 
 ## 📊 How It Works
 

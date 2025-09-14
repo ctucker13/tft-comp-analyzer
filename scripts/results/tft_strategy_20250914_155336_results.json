@@ -1,0 +1,40 @@
+{
+  "model_name": "tft_strategy_20250914_155336",
+  "training_samples": 24,
+  "test_samples": 6,
+  "hyperparameters": {
+    "hidden_dim": 256,
+    "dropout": 0.3,
+    "learning_rate": 0.001
+  },
+  "training_history": {
+    "train_loss": [
+      16.148534774780273,
+      9.863628387451172
+    ],
+    "val_loss": [
+      18.148815155029297,
+      15.7078275680542
+    ],
+    "placement_mse": [
+      16.92472267150879,
+      14.547972679138184
+    ],
+    "comp_type_acc": [
+      0.5,
+      0.5
+    ],
+    "risk_mse": [
+      0.09815564751625061,
+      0.09462379664182663
+    ]
+  },
+  "evaluation_metrics": {
+    "placement_mse": 10.262642860412598,
+    "comp_type_accuracy": 0.6666666666666666,
+    "risk_mse": 0.09078484028577805,
+    "samples_evaluated": 6
+  },
+  "feature_count": 35,
+  "training_completed": "2025-09-14T15:53:37.179469"
+}
