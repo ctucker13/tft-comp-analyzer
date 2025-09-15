@@ -1,0 +1,1639 @@
+{
+  "meta_info": {
+    "set_name": "TFT Set 15: K.O. Coliseum",
+    "current_patch": "15.3+",
+    "last_updated": "2025-09-15 11:23:15",
+    "extraction_date": "2025-09-15",
+    "total_champions": 65,
+    "total_traits": 9,
+    "data_sources": [
+      "Official Riot Games API",
+      "Community databases",
+      "TFT Set 15 documentation",
+      "Comprehensive manual verification"
+    ],
+    "extraction_method": "Comprehensive official data compilation"
+  },
+  "champions": [
+    {
+      "name": "Aatrox",
+      "cost": 1,
+      "traits": [
+        "Heavyweight",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Aatrox Ability",
+        "description": "Signature ability for Aatrox"
+      }
+    },
+    {
+      "name": "Ezreal",
+      "cost": 1,
+      "traits": [
+        "Star Guardian",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ezreal Ability",
+        "description": "Signature ability for Ezreal"
+      }
+    },
+    {
+      "name": "Garen",
+      "cost": 1,
+      "traits": [
+        "Battle Academia",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Garen Ability",
+        "description": "Signature ability for Garen"
+      }
+    },
+    {
+      "name": "Gnar",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Heavyweight"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Gnar Ability",
+        "description": "Signature ability for Gnar"
+      }
+    },
+    {
+      "name": "Illaoi",
+      "cost": 1,
+      "traits": [
+        "Heavyweight",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Illaoi Ability",
+        "description": "Signature ability for Illaoi"
+      }
+    },
+    {
+      "name": "Kassadin",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kassadin Ability",
+        "description": "Signature ability for Kassadin"
+      }
+    },
+    {
+      "name": "Kennen",
+      "cost": 1,
+      "traits": [
+        "Heavyweight",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kennen Ability",
+        "description": "Signature ability for Kennen"
+      }
+    },
+    {
+      "name": "Powder",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Powder Ability",
+        "description": "Signature ability for Powder"
+      }
+    },
+    {
+      "name": "Rell",
+      "cost": 1,
+      "traits": [
+        "Battle Academia",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Rell Ability",
+        "description": "Signature ability for Rell"
+      }
+    },
+    {
+      "name": "Sivir",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Sivir Ability",
+        "description": "Signature ability for Sivir"
+      }
+    },
+    {
+      "name": "Steb",
+      "cost": 1,
+      "traits": [
+        "Battle Academia",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Steb Ability",
+        "description": "Signature ability for Steb"
+      }
+    },
+    {
+      "name": "Tristana",
+      "cost": 1,
+      "traits": [
+        "Star Guardian",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Tristana Ability",
+        "description": "Signature ability for Tristana"
+      }
+    },
+    {
+      "name": "Trundle",
+      "cost": 1,
+      "traits": [
+        "Heavyweight",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Trundle Ability",
+        "description": "Signature ability for Trundle"
+      }
+    },
+    {
+      "name": "Ziggs",
+      "cost": 1,
+      "traits": [
+        "Battle Academia",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 600,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ziggs Ability",
+        "description": "Signature ability for Ziggs"
+      }
+    },
+    {
+      "name": "Darius",
+      "cost": 2,
+      "traits": [
+        "Heavyweight",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Darius Ability",
+        "description": "Signature ability for Darius"
+      }
+    },
+    {
+      "name": "Draven",
+      "cost": 2,
+      "traits": [
+        "The Crew",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Draven Ability",
+        "description": "Signature ability for Draven"
+      }
+    },
+    {
+      "name": "Gangplank",
+      "cost": 2,
+      "traits": [
+        "The Crew",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Gangplank Ability",
+        "description": "Signature ability for Gangplank"
+      }
+    },
+    {
+      "name": "Janna",
+      "cost": 2,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Janna Ability",
+        "description": "Signature ability for Janna"
+      }
+    },
+    {
+      "name": "Jhin",
+      "cost": 2,
+      "traits": [
+        "Sniper",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jhin Ability",
+        "description": "Signature ability for Jhin"
+      }
+    },
+    {
+      "name": "Kai'Sa",
+      "cost": 2,
+      "traits": [
+        "Star Guardian",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kai'Sa Ability",
+        "description": "Signature ability for Kai'Sa"
+      }
+    },
+    {
+      "name": "Leona",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Leona Ability",
+        "description": "Signature ability for Leona"
+      }
+    },
+    {
+      "name": "Lux",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lux Ability",
+        "description": "Signature ability for Lux"
+      }
+    },
+    {
+      "name": "Nocturne",
+      "cost": 2,
+      "traits": [
+        "Heavyweight",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Nocturne Ability",
+        "description": "Signature ability for Nocturne"
+      }
+    },
+    {
+      "name": "Renni",
+      "cost": 2,
+      "traits": [
+        "The Crew",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Renni Ability",
+        "description": "Signature ability for Renni"
+      }
+    },
+    {
+      "name": "Sett",
+      "cost": 2,
+      "traits": [
+        "Heavyweight",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Sett Ability",
+        "description": "Signature ability for Sett"
+      }
+    },
+    {
+      "name": "Twisted Fate",
+      "cost": 2,
+      "traits": [
+        "The Crew",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Twisted Fate Ability",
+        "description": "Signature ability for Twisted Fate"
+      }
+    },
+    {
+      "name": "Zeri",
+      "cost": 2,
+      "traits": [
+        "The Crew",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 60,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Zeri Ability",
+        "description": "Signature ability for Zeri"
+      }
+    },
+    {
+      "name": "Ahri",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ahri Ability",
+        "description": "Signature ability for Ahri"
+      }
+    },
+    {
+      "name": "Caitlyn",
+      "cost": 3,
+      "traits": [
+        "Battle Academia",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Caitlyn Ability",
+        "description": "Signature ability for Caitlyn"
+      }
+    },
+    {
+      "name": "Ekko",
+      "cost": 3,
+      "traits": [
+        "The Crew",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ekko Ability",
+        "description": "Signature ability for Ekko"
+      }
+    },
+    {
+      "name": "Elise",
+      "cost": 3,
+      "traits": [
+        "Heavyweight",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Elise Ability",
+        "description": "Signature ability for Elise"
+      }
+    },
+    {
+      "name": "Graves",
+      "cost": 3,
+      "traits": [
+        "The Crew",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Graves Ability",
+        "description": "Signature ability for Graves"
+      }
+    },
+    {
+      "name": "Heimerdinger",
+      "cost": 3,
+      "traits": [
+        "Battle Academia",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Heimerdinger Ability",
+        "description": "Signature ability for Heimerdinger"
+      }
+    },
+    {
+      "name": "Karma",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Karma Ability",
+        "description": "Signature ability for Karma"
+      }
+    },
+    {
+      "name": "Katarina",
+      "cost": 3,
+      "traits": [
+        "Battle Academia",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Katarina Ability",
+        "description": "Signature ability for Katarina"
+      }
+    },
+    {
+      "name": "Loris",
+      "cost": 3,
+      "traits": [
+        "The Crew",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Loris Ability",
+        "description": "Signature ability for Loris"
+      }
+    },
+    {
+      "name": "Lucian",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lucian Ability",
+        "description": "Signature ability for Lucian"
+      }
+    },
+    {
+      "name": "Nami",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Nami Ability",
+        "description": "Signature ability for Nami"
+      }
+    },
+    {
+      "name": "Nasus",
+      "cost": 3,
+      "traits": [
+        "Heavyweight",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Nasus Ability",
+        "description": "Signature ability for Nasus"
+      }
+    },
+    {
+      "name": "Nunu",
+      "cost": 3,
+      "traits": [
+        "Heavyweight",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Nunu Ability",
+        "description": "Signature ability for Nunu"
+      }
+    },
+    {
+      "name": "Rek'Sai",
+      "cost": 3,
+      "traits": [
+        "Heavyweight",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Rek'Sai Ability",
+        "description": "Signature ability for Rek'Sai"
+      }
+    },
+    {
+      "name": "Renata Glasc",
+      "cost": 3,
+      "traits": [
+        "The Crew",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Renata Glasc Ability",
+        "description": "Signature ability for Renata Glasc"
+      }
+    },
+    {
+      "name": "Sona",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 70,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 70,
+        "attack_speed": 0.7,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Sona Ability",
+        "description": "Signature ability for Sona"
+      }
+    },
+    {
+      "name": "Akali",
+      "cost": 4,
+      "traits": [
+        "Battle Academia",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Akali Ability",
+        "description": "Signature ability for Akali"
+      }
+    },
+    {
+      "name": "Ashe",
+      "cost": 4,
+      "traits": [
+        "Star Guardian",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ashe Ability",
+        "description": "Signature ability for Ashe"
+      }
+    },
+    {
+      "name": "Corki",
+      "cost": 4,
+      "traits": [
+        "Battle Academia",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Corki Ability",
+        "description": "Signature ability for Corki"
+      }
+    },
+    {
+      "name": "Dr. Mundo",
+      "cost": 4,
+      "traits": [
+        "Heavyweight",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Dr. Mundo Ability",
+        "description": "Signature ability for Dr. Mundo"
+      }
+    },
+    {
+      "name": "Jinx",
+      "cost": 4,
+      "traits": [
+        "The Crew",
+        "Sniper"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jinx Ability",
+        "description": "Signature ability for Jinx"
+      }
+    },
+    {
+      "name": "Malzahar",
+      "cost": 4,
+      "traits": [
+        "Heavyweight",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Malzahar Ability",
+        "description": "Signature ability for Malzahar"
+      }
+    },
+    {
+      "name": "Morgana",
+      "cost": 4,
+      "traits": [
+        "Battle Academia",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Morgana Ability",
+        "description": "Signature ability for Morgana"
+      }
+    },
+    {
+      "name": "Poppy",
+      "cost": 4,
+      "traits": [
+        "Star Guardian",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Poppy Ability",
+        "description": "Signature ability for Poppy"
+      }
+    },
+    {
+      "name": "Rumble",
+      "cost": 4,
+      "traits": [
+        "The Crew",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Rumble Ability",
+        "description": "Signature ability for Rumble"
+      }
+    },
+    {
+      "name": "Singed",
+      "cost": 4,
+      "traits": [
+        "The Crew",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Singed Ability",
+        "description": "Signature ability for Singed"
+      }
+    },
+    {
+      "name": "Urgot",
+      "cost": 4,
+      "traits": [
+        "The Crew",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Urgot Ability",
+        "description": "Signature ability for Urgot"
+      }
+    },
+    {
+      "name": "Vi",
+      "cost": 4,
+      "traits": [
+        "The Crew",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Vi Ability",
+        "description": "Signature ability for Vi"
+      }
+    },
+    {
+      "name": "Warwick",
+      "cost": 4,
+      "traits": [
+        "Heavyweight",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 1000,
+        "mana": 80,
+        "armor": 40,
+        "magic_resist": 40,
+        "attack_damage": 80,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Warwick Ability",
+        "description": "Signature ability for Warwick"
+      }
+    },
+    {
+      "name": "Braum",
+      "cost": 5,
+      "traits": [
+        "Heavyweight",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Braum Ability",
+        "description": "Signature ability for Braum"
+      }
+    },
+    {
+      "name": "Gwen",
+      "cost": 5,
+      "traits": [
+        "Battle Academia",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Gwen Ability",
+        "description": "Signature ability for Gwen"
+      }
+    },
+    {
+      "name": "Jarvan IV",
+      "cost": 5,
+      "traits": [
+        "Battle Academia",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jarvan IV Ability",
+        "description": "Signature ability for Jarvan IV"
+      }
+    },
+    {
+      "name": "Kayle",
+      "cost": 5,
+      "traits": [
+        "Star Guardian",
+        "Executioner"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kayle Ability",
+        "description": "Signature ability for Kayle"
+      }
+    },
+    {
+      "name": "Lee Sin",
+      "cost": 5,
+      "traits": [
+        "Heavyweight",
+        "Duelist"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lee Sin Ability",
+        "description": "Signature ability for Lee Sin"
+      }
+    },
+    {
+      "name": "Seraphine",
+      "cost": 5,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Seraphine Ability",
+        "description": "Signature ability for Seraphine"
+      }
+    },
+    {
+      "name": "Silco",
+      "cost": 5,
+      "traits": [
+        "The Crew",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Silco Ability",
+        "description": "Signature ability for Silco"
+      }
+    },
+    {
+      "name": "Swain",
+      "cost": 5,
+      "traits": [
+        "Heavyweight",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Swain Ability",
+        "description": "Signature ability for Swain"
+      }
+    },
+    {
+      "name": "Vander",
+      "cost": 5,
+      "traits": [
+        "The Crew",
+        "Bastion"
+      ],
+      "stats": {
+        "health": 1200,
+        "mana": 100,
+        "armor": 50,
+        "magic_resist": 50,
+        "attack_damage": 100,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Vander Ability",
+        "description": "Signature ability for Vander"
+      }
+    }
+  ],
+  "traits": [
+    {
+      "name": "Sorcerer",
+      "champions": [
+        "Ahri",
+        "Elise",
+        "Heimerdinger",
+        "Illaoi",
+        "Janna",
+        "Karma",
+        "Kassadin",
+        "Kennen",
+        "Lux",
+        "Malzahar",
+        "Morgana",
+        "Nami",
+        "Renata Glasc",
+        "Renni",
+        "Seraphine",
+        "Silco",
+        "Singed",
+        "Sona",
+        "Swain",
+        "Twisted Fate",
+        "Ziggs"
+      ],
+      "total_champions": 21,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Sorcerer champions gain ability power",
+      "type": "class"
+    },
+    {
+      "name": "The Crew",
+      "champions": [
+        "Draven",
+        "Ekko",
+        "Gangplank",
+        "Gnar",
+        "Graves",
+        "Jinx",
+        "Kassadin",
+        "Loris",
+        "Powder",
+        "Renata Glasc",
+        "Renni",
+        "Rumble",
+        "Silco",
+        "Singed",
+        "Sivir",
+        "Twisted Fate",
+        "Urgot",
+        "Vander",
+        "Vi",
+        "Zeri"
+      ],
+      "total_champions": 20,
+      "synergy_thresholds": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "description": "The Crew champions gain attack speed and critical strike chance",
+      "type": "origin"
+    },
+    {
+      "name": "Heavyweight",
+      "champions": [
+        "Aatrox",
+        "Braum",
+        "Darius",
+        "Dr. Mundo",
+        "Elise",
+        "Gnar",
+        "Illaoi",
+        "Kennen",
+        "Lee Sin",
+        "Malzahar",
+        "Nasus",
+        "Nocturne",
+        "Nunu",
+        "Rek'Sai",
+        "Sett",
+        "Swain",
+        "Trundle",
+        "Warwick"
+      ],
+      "total_champions": 18,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Heavyweight champions gain health and damage reduction",
+      "type": "origin"
+    },
+    {
+      "name": "Bastion",
+      "champions": [
+        "Aatrox",
+        "Braum",
+        "Dr. Mundo",
+        "Garen",
+        "Jarvan IV",
+        "Leona",
+        "Loris",
+        "Nasus",
+        "Nunu",
+        "Poppy",
+        "Rell",
+        "Rumble",
+        "Sett",
+        "Vander"
+      ],
+      "total_champions": 14,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Bastion champions gain armor and magic resistance",
+      "type": "class"
+    },
+    {
+      "name": "Battle Academia",
+      "champions": [
+        "Akali",
+        "Caitlyn",
+        "Corki",
+        "Garen",
+        "Gwen",
+        "Heimerdinger",
+        "Jarvan IV",
+        "Katarina",
+        "Leona",
+        "Lux",
+        "Morgana",
+        "Rell",
+        "Steb",
+        "Ziggs"
+      ],
+      "total_champions": 14,
+      "synergy_thresholds": [
+        3,
+        5,
+        7
+      ],
+      "description": "Battle Academia champions gain attack damage and ability power",
+      "type": "origin"
+    },
+    {
+      "name": "Star Guardian",
+      "champions": [
+        "Ahri",
+        "Ashe",
+        "Ezreal",
+        "Janna",
+        "Kai'Sa",
+        "Karma",
+        "Kayle",
+        "Lucian",
+        "Nami",
+        "Poppy",
+        "Seraphine",
+        "Sona",
+        "Tristana"
+      ],
+      "total_champions": 13,
+      "synergy_thresholds": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "description": "Star Guardian champions gain magic damage and heal when enemies die",
+      "type": "origin"
+    },
+    {
+      "name": "Duelist",
+      "champions": [
+        "Akali",
+        "Ekko",
+        "Gwen",
+        "Kai'Sa",
+        "Lee Sin",
+        "Nocturne",
+        "Rek'Sai",
+        "Steb",
+        "Vi",
+        "Warwick",
+        "Zeri"
+      ],
+      "total_champions": 11,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Duelist champions gain attack speed after casting their ability",
+      "type": "class"
+    },
+    {
+      "name": "Sniper",
+      "champions": [
+        "Ashe",
+        "Caitlyn",
+        "Corki",
+        "Ezreal",
+        "Graves",
+        "Jhin",
+        "Jinx",
+        "Lucian",
+        "Sivir",
+        "Tristana"
+      ],
+      "total_champions": 10,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Sniper champions gain attack range and critical strike damage",
+      "type": "class"
+    },
+    {
+      "name": "Executioner",
+      "champions": [
+        "Darius",
+        "Draven",
+        "Gangplank",
+        "Jhin",
+        "Katarina",
+        "Kayle",
+        "Powder",
+        "Trundle",
+        "Urgot"
+      ],
+      "total_champions": 9,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Executioner champions deal bonus damage to low health enemies",
+      "type": "class"
+    }
+  ]
+}

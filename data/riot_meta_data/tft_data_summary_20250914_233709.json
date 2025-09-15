@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "version": "15.18.1",
+    "fetched_at": "2025-09-14T23:37:09.773373",
+    "source": "Riot Games Data Dragon API",
+    "endpoints_fetched": 8
+  },
+  "data_counts": {},
+  "files_created": {
+    "raw_data": "data/riot_meta_data/tft_raw_data_20250914_233709.json"
+  },
+  "generated_at": "2025-09-14T23:37:09.829704"
+}

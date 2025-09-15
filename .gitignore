@@ -117,10 +117,14 @@ temp/
 
 # Project specific
 config/local_settings.py
-data/
+cache/
 *.csv
-*.json
 *.xlsx
+
+# Keep important data files but exclude cached API responses
+!data/compositions/tft15_compositions.json
+!data/meta_analysis/meta_analysis_sample_*.json
+!data/training/training_data_*.json
 
 # API keys and sensitive data (double protection)
 *api_key*

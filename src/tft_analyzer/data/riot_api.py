@@ -4,15 +4,19 @@ from typing import List, Dict, Any, Optional
 import json
 import time
 from datetime import datetime, timedelta
-from config.settings import LLMProvider
+from pathlib import Path
 
 class RiotTFTAPI:
-    def __init__(self, api_key: str, region: str = "euw1"):
+    def __init__(self, api_key: str, region: str = "euw1", use_cache: bool = False):
         self.api_key = api_key
         self.region = region  # Platform ID (euw1, eun1, etc.)
         self.base_url = f"https://{region}.api.riotgames.com"
         self.headers = {"X-Riot-Token": self.api_key}
-        self._force_mock = False
+        self.use_cache = use_cache
+        
+        # Setup cache directory
+        self.cache_dir = Path("cache/riot_api")
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
         
         # Rate limiting for Development API key (10 requests per 10 seconds)
         self._request_times = []
@@ -42,6 +46,54 @@ class RiotTFTAPI:
         # Record this request
         self._request_times.append(current_time)
     
+    def _get_cache_path(self, cache_key: str) -> Path:
+        """Get cache file path for a given key"""
+        return self.cache_dir / f"{cache_key}.json"
+    
+    def _save_to_cache(self, cache_key: str, data: Any) -> None:
+        """Save data to cache file"""
+        if not self.use_cache:
+            return
+            
+        cache_path = self._get_cache_path(cache_key)
+        cache_data = {
+            "timestamp": time.time(),
+            "data": data
+        }
+        
+        try:
+            with open(cache_path, 'w') as f:
+                json.dump(cache_data, f, indent=2)
+        except Exception as e:
+            print(f"⚠️ Failed to save cache: {e}")
+    
+    def _load_from_cache(self, cache_key: str, max_age_hours: float = 24) -> Optional[Any]:
+        """Load data from cache if it exists and is not expired"""
+        if not self.use_cache:
+            return None
+            
+        cache_path = self._get_cache_path(cache_key)
+        
+        if not cache_path.exists():
+            return None
+            
+        try:
+            with open(cache_path, 'r') as f:
+                cache_data = json.load(f)
+            
+            # Check if cache is expired
+            cache_age = time.time() - cache_data["timestamp"]
+            if cache_age > (max_age_hours * 3600):
+                print(f"📅 Cache expired for {cache_key} (age: {cache_age/3600:.1f}h)")
+                return None
+                
+            print(f"💾 Using cached data for {cache_key} (age: {cache_age/3600:.1f}h)")
+            return cache_data["data"]
+            
+        except Exception as e:
+            print(f"⚠️ Failed to load cache: {e}")
+            return None
+    
     def _get_regional_cluster(self, platform: str) -> str:
         """Map platform ID to regional cluster for match data"""
         europe_platforms = ["euw1", "eun1", "tr1", "ru1"]
@@ -57,12 +109,13 @@ class RiotTFTAPI:
         else:
             return "americas"  # Default fallback
     
-    def is_mock_mode(self) -> bool:
-        """Check if we should use mock data"""
-        return (not self.api_key or 
-                self.api_key == "your_riot_api_key_here" or 
-                self.api_key == "" or 
-                self._force_mock)
+    def validate_api_key(self) -> bool:
+        """Validate that we have a real Riot API key"""
+        if (not self.api_key or 
+            self.api_key == "your_riot_api_key_here" or 
+            self.api_key == ""):
+            raise ValueError("❌ Real Riot API key required for analysis. Please add a valid RIOT_API_KEY to your environment.")
+        return True
     
     def _is_set15_match(self, match_data: Dict[str, Any]) -> bool:
         """Check if match is from Set 15"""
@@ -87,13 +140,49 @@ class RiotTFTAPI:
         
         return False
     
+    def _is_patch_15_3_or_later(self, match_data: Dict[str, Any]) -> bool:
+        """Check if match is from patch 15.3 or later (from 2025/08/26 onwards)
+        Note: This is now less aggressive - if we can't determine the patch, we assume it's valid"""
+        if not match_data:
+            return False
+        info = match_data.get("info", {})
+        game_version = info.get("game_version", "")
+        game_datetime = info.get("game_datetime", 0)
+        
+        # If no date/version info, assume it's valid (less aggressive filtering)
+        if not game_datetime and not game_version:
+            return True
+        
+        # Check by game version first if available (more reliable than date)
+        if game_version:
+            import re
+            version_pattern = r'(\d+\.\d+)'
+            version_match = re.search(version_pattern, game_version)
+            if version_match:
+                version = version_match.group(1)
+                # Parse version numbers (e.g., "15.3" -> [15, 3])
+                try:
+                    major, minor = map(int, version.split('.'))
+                    return major > 15 or (major == 15 and minor >= 3)
+                except ValueError:
+                    # If version parsing fails, assume it's valid
+                    return True
+        
+        # Check by date only if version check didn't work and we have a date
+        if game_datetime:
+            match_time = datetime.fromtimestamp(game_datetime / 1000)
+            patch_15_3_release = datetime(2025, 8, 26)
+            return match_time >= patch_15_3_release
+        
+        # If we can't determine anything, assume it's valid (less aggressive)
+        return True
+    
     async def test_api_connection(self) -> bool:
         """Test if the API key and connection are working"""
         print("Testing API connection...")
         
-        if self.is_mock_mode():
-            print("In mock mode - skipping API test")
-            return False
+        # Validate API key first
+        self.validate_api_key()
         
         # Simple test endpoint - TFT status
         url = f"{self.base_url}/tft/status/v1/platform-data"
@@ -127,40 +216,18 @@ class RiotTFTAPI:
             print(f"✗ API connection test failed: {e}")
             return False
     
-    def _get_mock_challenger_players(self) -> List[Dict]:
-        """Return mock challenger data with PUUID directly"""
-        return [
-            {
-                "puuid": "mock_puuid_1", 
-                "leaguePoints": 1200,
-                "rank": "I",
-                "wins": 45,
-                "losses": 25,
-                "summonerId": "mock_summoner_1"  # For backwards compatibility
-            },
-            {
-                "puuid": "mock_puuid_2", 
-                "leaguePoints": 1150,
-                "rank": "I", 
-                "wins": 42,
-                "losses": 28,
-                "summonerId": "mock_summoner_2"
-            },
-            {
-                "puuid": "mock_puuid_3", 
-                "leaguePoints": 1100,
-                "rank": "I",
-                "wins": 40,
-                "losses": 30,
-                "summonerId": "mock_summoner_3"
-            }
-        ]
     
     async def get_challenger_players(self) -> List[Dict]:
         """Get top players for high-quality data - PUUID included directly"""
-        if self.is_mock_mode():
-            print("Using mock challenger player data...")
-            return self._get_mock_challenger_players()
+        cache_key = f"challenger_players_{self.region}"
+        
+        # Try cache first (extended for development)
+        cached_data = self._load_from_cache(cache_key, max_age_hours=6)  # Cache for 6 hours - good for dev iteration
+        if cached_data is not None:
+            return cached_data
+        
+        # Validate API key first
+        self.validate_api_key()
         
         # Real API call using platform routing
         url = f"{self.base_url}/tft/league/v1/challenger"
@@ -186,38 +253,306 @@ class RiotTFTAPI:
                                 print(f"⚠️ Skipping player without PUUID: {entry.get('summonerId', 'Unknown')}")
                         
                         print(f"✓ {len(players_with_puuid)} players have valid PUUIDs")
+                        
+                        # Save to cache
+                        self._save_to_cache(cache_key, players_with_puuid)
+                        
                         return players_with_puuid
                         
                     elif response.status == 401:
-                        print("✗ 401 Unauthorized - Invalid API key, falling back to mock data")
-                        return self._get_mock_challenger_players()
+                        raise ValueError("✗ 401 Unauthorized - Invalid API key. Please check your RIOT_API_KEY.")
                     elif response.status == 403:
-                        print("✗ 403 Forbidden - Rate limited or expired key, falling back to mock data")
-                        return self._get_mock_challenger_players()
+                        raise ValueError("✗ 403 Forbidden - Rate limited or expired key. Development keys expire every 24 hours.")
                     else:
-                        print(f"✗ API Error: {response.status} - falling back to mock data")
                         text = await response.text()
-                        print(f"  Response: {text[:200]}...")
-                        return self._get_mock_challenger_players()
+                        raise ValueError(f"✗ API Error {response.status}: {text[:200]}...")
                         
         except Exception as e:
-            print(f"✗ Error fetching challenger players: {e} - falling back to mock data")
-            return self._get_mock_challenger_players()
+            if isinstance(e, ValueError):
+                raise  # Re-raise our custom errors
+            raise ValueError(f"✗ Error fetching challenger players: {e}")
+
+    async def get_master_players(self) -> List[Dict]:
+        """Get Master tier players - PUUID included directly"""
+        cache_key = f"master_players_{self.region}"
+        
+        # Try cache first
+        cached_data = self._load_from_cache(cache_key, max_age_hours=6)
+        if cached_data is not None:
+            return cached_data
+        
+        # Validate API key first
+        self.validate_api_key()
+        
+        # Real API call using platform routing
+        url = f"{self.base_url}/tft/league/v1/master"
+        print(f"Fetching master data from: {url}")
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=self.headers) as response:
+                    print(f"Master API response status: {response.status}")
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        entries = data.get("entries", [])
+                        print(f"✓ Found {len(entries)} master players")
+                        
+                        # Validate that PUUIDs are present
+                        players_with_puuid = []
+                        for entry in entries:
+                            puuid = entry.get("puuid", "")
+                            if puuid:
+                                players_with_puuid.append(entry)
+                            else:
+                                print(f"⚠️ Skipping master player without PUUID: {entry.get('summonerId', 'Unknown')}")
+                        
+                        print(f"✓ {len(players_with_puuid)} master players have valid PUUIDs")
+                        
+                        # Save to cache
+                        self._save_to_cache(cache_key, players_with_puuid)
+                        
+                        return players_with_puuid
+                        
+                    elif response.status == 401:
+                        raise ValueError("✗ 401 Unauthorized - Invalid API key. Please check your RIOT_API_KEY.")
+                    elif response.status == 403:
+                        raise ValueError("✗ 403 Forbidden - Rate limited or expired key. Development keys expire every 24 hours.")
+                    else:
+                        text = await response.text()
+                        raise ValueError(f"✗ Master API Error {response.status}: {text[:200]}...")
+                        
+        except Exception as e:
+            if isinstance(e, ValueError):
+                raise  # Re-raise our custom errors
+            raise ValueError(f"✗ Error fetching master players: {e}")
+
+    async def get_grandmaster_players(self) -> List[Dict]:
+        """Get Grandmaster tier players - PUUID included directly"""
+        cache_key = f"grandmaster_players_{self.region}"
+        
+        # Try cache first
+        cached_data = self._load_from_cache(cache_key, max_age_hours=6)
+        if cached_data is not None:
+            return cached_data
+        
+        # Validate API key first
+        self.validate_api_key()
+        
+        # Real API call using platform routing
+        url = f"{self.base_url}/tft/league/v1/grandmaster"
+        print(f"Fetching grandmaster data from: {url}")
+        
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=self.headers) as response:
+                    print(f"Grandmaster API response status: {response.status}")
+                    
+                    if response.status == 200:
+                        data = await response.json()
+                        entries = data.get("entries", [])
+                        print(f"✓ Found {len(entries)} grandmaster players")
+                        
+                        # Validate that PUUIDs are present
+                        players_with_puuid = []
+                        for entry in entries:
+                            puuid = entry.get("puuid", "")
+                            if puuid:
+                                players_with_puuid.append(entry)
+                            else:
+                                print(f"⚠️ Skipping grandmaster player without PUUID: {entry.get('summonerId', 'Unknown')}")
+                        
+                        print(f"✓ {len(players_with_puuid)} grandmaster players have valid PUUIDs")
+                        
+                        # Save to cache
+                        self._save_to_cache(cache_key, players_with_puuid)
+                        
+                        return players_with_puuid
+                        
+                    elif response.status == 401:
+                        raise ValueError("✗ 401 Unauthorized - Invalid API key. Please check your RIOT_API_KEY.")
+                    elif response.status == 403:
+                        raise ValueError("✗ 403 Forbidden - Rate limited or expired key. Development keys expire every 24 hours.")
+                    else:
+                        text = await response.text()
+                        raise ValueError(f"✗ Grandmaster API Error {response.status}: {text[:200]}...")
+                        
+        except Exception as e:
+            if isinstance(e, ValueError):
+                raise  # Re-raise our custom errors
+            raise ValueError(f"✗ Error fetching grandmaster players: {e}")
+
+    async def get_high_tier_players(self, include_tiers: List[str] = None) -> List[Dict]:
+        """Get players from multiple high tiers with tier information
+        
+        Args:
+            include_tiers: List of tiers to include ['challenger', 'grandmaster', 'master']
+                          Defaults to all three tiers
+        """
+        if include_tiers is None:
+            include_tiers = ['challenger', 'grandmaster', 'master']
+        
+        all_players = []
+        
+        # Get players from each tier
+        for tier in include_tiers:
+            try:
+                if tier == 'challenger':
+                    players = await self.get_challenger_players()
+                    # Add tier information to each player
+                    for player in players:
+                        player['tier'] = 'CHALLENGER'
+                        player['rank'] = 'I'  # Challenger only has one rank
+                    all_players.extend(players)
+                    print(f"✓ Added {len(players)} challenger players")
+                    
+                elif tier == 'grandmaster':
+                    players = await self.get_grandmaster_players()
+                    # Add tier information to each player
+                    for player in players:
+                        player['tier'] = 'GRANDMASTER'
+                        player['rank'] = 'I'  # Grandmaster only has one rank
+                    all_players.extend(players)
+                    print(f"✓ Added {len(players)} grandmaster players")
+                    
+                elif tier == 'master':
+                    players = await self.get_master_players()
+                    # Add tier information to each player
+                    for player in players:
+                        player['tier'] = 'MASTER'
+                        player['rank'] = 'I'  # Master only has one rank
+                    all_players.extend(players)
+                    print(f"✓ Added {len(players)} master players")
+                    
+                # Add delay between tier fetches to respect rate limits
+                if tier != include_tiers[-1]:  # Don't sleep after the last tier
+                    await asyncio.sleep(2)
+                    
+            except Exception as e:
+                print(f"⚠️ Failed to fetch {tier} players: {e}")
+                continue
+        
+        # Sort by LP (highest first) to prioritize better players
+        all_players.sort(key=lambda x: x.get('leaguePoints', 0), reverse=True)
+        
+        print(f"🎯 Total high-tier players collected: {len(all_players)}")
+        return all_players
+
+    async def get_winning_players_from_recent_matches(self, players: List[Dict], sample_matches: int = 3) -> List[Dict]:
+        """Filter players based on recent match performance - prioritize winners
+        
+        Args:
+            players: List of player dictionaries with PUUIDs
+            sample_matches: Number of recent matches to check for win rate
+        
+        Returns:
+            List of players sorted by recent performance (winners first)
+        """
+        player_performance = []
+        
+        print(f"🏆 Analyzing recent performance for {len(players)} players...")
+        
+        for i, player in enumerate(players[:10]):  # Limit to first 10 players to avoid excessive API calls
+            puuid = player.get("puuid", "")
+            tier = player.get("tier", "UNKNOWN")
+            
+            if not puuid:
+                continue
+            
+            try:
+                # Get recent match history
+                recent_matches = await self.get_match_history(puuid, count=sample_matches)
+                
+                if not recent_matches:
+                    continue
+                
+                wins = 0
+                top4s = 0
+                total_matches = 0
+                
+                for match_id in recent_matches[:sample_matches]:
+                    # Add small delay to respect rate limits
+                    await asyncio.sleep(1)
+                    
+                    match_details = await self.get_match_details(match_id, require_patch_15_3=False, debug=False)
+                    
+                    if not match_details or not self._is_set15_match(match_details):
+                        continue
+                    
+                    # Find this player's placement in the match
+                    participants = match_details.get("info", {}).get("participants", [])
+                    for participant in participants:
+                        if participant.get("puuid") == puuid:
+                            placement = participant.get("placement", 8)
+                            total_matches += 1
+                            
+                            if placement == 1:
+                                wins += 1
+                                top4s += 1
+                            elif placement <= 4:
+                                top4s += 1
+                            break
+                
+                if total_matches > 0:
+                    win_rate = wins / total_matches
+                    top4_rate = top4s / total_matches
+                    
+                    # Add performance metrics to player data
+                    player_with_performance = player.copy()
+                    player_with_performance.update({
+                        'recent_matches_analyzed': total_matches,
+                        'recent_wins': wins,
+                        'recent_top4s': top4s,
+                        'win_rate': win_rate,
+                        'top4_rate': top4_rate,
+                        'performance_score': (win_rate * 2) + top4_rate  # Weight wins more heavily
+                    })
+                    
+                    player_performance.append(player_with_performance)
+                    print(f"  {tier} player: {wins}W/{total_matches}M (WR: {win_rate:.1%}, Top4: {top4_rate:.1%})")
+                
+            except Exception as e:
+                print(f"  ⚠️ Error analyzing {tier} player performance: {e}")
+                continue
+        
+        # Sort by performance score (best performers first)
+        player_performance.sort(key=lambda x: x.get('performance_score', 0), reverse=True)
+        
+        print(f"✅ Performance analysis complete: {len(player_performance)} players with win data")
+        return player_performance
     
     # REMOVED: get_summoner_by_id method is no longer needed!
-    # The PUUID comes directly from challenger API
+    # The PUUID comes directly from challenger/master/grandmaster APIs
     
-    async def get_match_history(self, puuid: str, count: int = 20) -> List[str]:
-        """Get recent match IDs using PUUID directly"""
+    async def get_match_history(self, puuid: str, count: int = 20, hours_back: int = None, set15_optimized: bool = False) -> List[str]:
+        """Get recent match IDs using PUUID directly
+        
+        Args:
+            puuid: Player PUUID
+            count: Maximum number of matches to return
+            hours_back: If provided, only return matches from the last N hours
+            set15_optimized: If True, automatically filter to Set 15 launch date or later (disabled by default)
+        """
         if not puuid:
             print("✗ No PUUID provided")
             return []
         
-        if self.is_mock_mode() or puuid.startswith("mock_"):
-            base_id = puuid.replace("mock_puuid_", "")
-            mock_matches = [f"EUW1_set15_mock_match_{base_id}_{i}" for i in range(1, min(count + 1, 6))]
-            print(f"Using mock Set 15 match history: {mock_matches}")
-            return mock_matches
+        # Create cache key including time filter
+        if hours_back:
+            if hours_back == 24:
+                time_suffix = "_24h"
+            elif hours_back == 168:  # 7 days
+                time_suffix = "_7d"
+            else:
+                time_suffix = f"_{hours_back}h"
+        else:
+            time_suffix = ""
+        cache_key = f"match_history_{puuid[:16]}{time_suffix}_{count}"
+        
+        # Try cache first (extended for development iteration)
+        cached_data = self._load_from_cache(cache_key, max_age_hours=2)  # Cache for 2 hours - good for dev iteration
+        if cached_data is not None:
+            return cached_data
         
         # Rate limiting protection
         await self._rate_limit_wait()
@@ -225,7 +560,24 @@ class RiotTFTAPI:
         # Use regional cluster for match data (EUROPE for European platforms)
         url = f"https://{self.regional_cluster}.api.riotgames.com/tft/match/v1/matches/by-puuid/{puuid}/ids"
         params = {"count": count}
-        print(f"Getting match history from: {url}")
+        
+        # Add time-based filtering
+        start_time = None
+        
+        if hours_back:
+            # Calculate start time (hours ago) in Unix timestamp (seconds)
+            start_time = int((datetime.now() - timedelta(hours=hours_back)).timestamp())
+            print(f"Getting match history from last {hours_back} hours: {url}")
+        elif set15_optimized:
+            # Set 15 launched around 2025/08/20, so filter to that date to avoid old matches
+            set15_launch = datetime(2025, 8, 20)
+            start_time = int(set15_launch.timestamp())
+            print(f"Getting match history from Set 15 launch date ({set15_launch.strftime('%Y-%m-%d')}): {url}")
+        else:
+            print(f"Getting match history from: {url}")
+        
+        if start_time:
+            params["start"] = start_time
         
         try:
             async with aiohttp.ClientSession() as session:
@@ -235,32 +587,52 @@ class RiotTFTAPI:
                     if response.status == 200:
                         matches = await response.json()
                         print(f"✓ Found {len(matches)} matches")
+                        
+                        # Save to cache
+                        self._save_to_cache(cache_key, matches)
+                        
                         return matches
                     elif response.status == 401:
-                        print("✗ 401 Unauthorized - using mock matches")
-                        return [f"EUW1_set15_mock_match_1_{i}" for i in range(1, 4)]
+                        raise ValueError("✗ 401 Unauthorized - Invalid API key")
                     elif response.status == 403:
-                        print("✗ 403 Forbidden - Rate limited! Using mock matches")
-                        return [f"EUW1_set15_mock_match_1_{i}" for i in range(1, 4)]
+                        raise ValueError("✗ 403 Forbidden - Rate limited or expired key")
                     else:
-                        print(f"✗ Match history API Error: {response.status}")
                         text = await response.text()
-                        print(f"  Response: {text[:200]}...")
-                        return [f"EUW1_set15_mock_match_1_{i}" for i in range(1, 4)]
+                        raise ValueError(f"✗ Match history API Error {response.status}: {text[:200]}...")
                         
         except Exception as e:
-            print(f"✗ Error fetching match history: {e}")
-            return []
+            if isinstance(e, ValueError):
+                raise  # Re-raise our custom errors
+            raise ValueError(f"✗ Error fetching match history: {e}")
     
-    async def get_match_details(self, match_id: str) -> Dict[str, Any]:
-        """Get detailed match data - filtered for Set 15"""
+    async def get_match_details(self, match_id: str, require_patch_15_3: bool = True, debug: bool = True) -> Dict[str, Any]:
+        """Get detailed match data - filtered for Set 15 and optionally patch 15.3+"""
         if not match_id:
             print("✗ No match ID provided")
             return {}
         
-        if self.is_mock_mode() or "mock" in match_id:
-            print(f"Using mock Set 15 match details for: {match_id}")
-            return self._generate_set15_mock_match_details(match_id)
+        # Create cache key
+        cache_key = f"match_details_{match_id}"
+        
+        # Try cache first (longer cache time for match details as they don't change)
+        cached_data = self._load_from_cache(cache_key, max_age_hours=72)  # Cache for 72 hours (match details are immutable)
+        if cached_data is not None:
+            # Still apply filtering to cached data
+            if not self._is_set15_match(cached_data):
+                print("⏭️ Cached match is not Set 15")
+                return {}
+            
+            if require_patch_15_3 and not self._is_patch_15_3_or_later(cached_data):
+                info = cached_data.get("info", {})
+                game_version = info.get("game_version", "Unknown")
+                game_datetime = info.get("game_datetime", 0)
+                match_date = datetime.fromtimestamp(game_datetime / 1000).strftime('%Y-%m-%d') if game_datetime else "Unknown"
+                print(f"⏭️ Cached match from {match_date} (version: {game_version}) is pre-15.3")
+                return {}
+            
+            # If cached match passes filters, return it
+            print("💾 Using cached match details")
+            return cached_data
         
         # Rate limiting protection
         await self._rate_limit_wait()
@@ -277,137 +649,64 @@ class RiotTFTAPI:
                     if response.status == 200:
                         match_data = await response.json()
                         
-                        # Filter for Set 15 only
-                        if self._is_set15_match(match_data):
-                            participants_count = len(match_data.get("info", {}).get("participants", []))
+                        # Debug: Show match info before filtering
+                        if debug:
+                            info = match_data.get("info", {})
+                            set_num = info.get("tft_set_number", "Unknown") 
+                            game_version = info.get("game_version", "Unknown")
+                            game_datetime = info.get("game_datetime", 0)
+                            match_date = datetime.fromtimestamp(game_datetime / 1000).strftime('%Y-%m-%d') if game_datetime else "Unknown"
+                            print(f"🔍 Match {match_id[:8]}: Set {set_num}, Version {game_version}, Date {match_date}")
+                        
+                        # Filter for Set 15 first
+                        if not self._is_set15_match(match_data):
                             set_num = match_data.get("info", {}).get("tft_set_number", "Unknown")
-                            print(f"✓ Got Set {set_num} match with {participants_count} participants")
-                            return match_data
-                        else:
-                            set_num = match_data.get("info", {}).get("tft_set_number", "Unknown")
-                            print(f"⏭️ Skipping Set {set_num} match (looking for Set 15)")
+                            if debug:
+                                print(f"⏭️ Skipping Set {set_num} match (looking for Set 15)")
                             return {}
+                        
+                        # Filter for patch 15.3+ if required
+                        if require_patch_15_3 and not self._is_patch_15_3_or_later(match_data):
+                            info = match_data.get("info", {})
+                            game_version = info.get("game_version", "Unknown")
+                            game_datetime = info.get("game_datetime", 0)
+                            match_date = datetime.fromtimestamp(game_datetime / 1000).strftime('%Y-%m-%d') if game_datetime else "Unknown"
+                            if debug:
+                                print(f"⏭️ Skipping pre-15.3 match from {match_date} (version: {game_version})")
+                            return {}
+                        
+                        participants_count = len(match_data.get("info", {}).get("participants", []))
+                        set_num = match_data.get("info", {}).get("tft_set_number", "Unknown")
+                        info = match_data.get("info", {})
+                        game_version = info.get("game_version", "Unknown")
+                        game_datetime = info.get("game_datetime", 0)
+                        match_date = datetime.fromtimestamp(game_datetime / 1000).strftime('%Y-%m-%d %H:%M') if game_datetime else "Unknown"
+                        print(f"✓ Got Set {set_num} match from {match_date} (version: {game_version}) with {participants_count} participants")
+                        
+                        # Save to cache
+                        self._save_to_cache(cache_key, match_data)
+                        
+                        return match_data
                     elif response.status == 401:
-                        print("✗ 401 Unauthorized - using mock match details")
-                        return self._generate_set15_mock_match_details(f"mock_{match_id}")
+                        raise ValueError("✗ 401 Unauthorized - Invalid API key")
                     elif response.status == 403:
-                        print("✗ 403 Forbidden - using mock match details")
-                        return self._generate_set15_mock_match_details(f"mock_{match_id}")
+                        raise ValueError("✗ 403 Forbidden - Rate limited or expired key")
                     else:
-                        print(f"✗ Match details API Error: {response.status}")
                         text = await response.text()
-                        print(f"  Response: {text[:200]}...")
-                        return self._generate_set15_mock_match_details(f"mock_{match_id}")
+                        raise ValueError(f"✗ Match details API Error {response.status}: {text[:200]}...")
                         
         except Exception as e:
-            print(f"✗ Error fetching match details: {e}")
-            return self._generate_set15_mock_match_details(match_id)
+            if isinstance(e, ValueError):
+                raise  # Re-raise our custom errors
+            raise ValueError(f"✗ Error fetching match details: {e}")
     
-    def _generate_set15_mock_match_details(self, match_id: str) -> Dict[str, Any]:
-        """Generate realistic Set 15 TFT match data with current meta"""
-        import random
-        
-        # Set 15 traits (K.O. Coliseum meta)
-        set15_traits = [
-            {"name": "TFT15_Destroyer", "num_units": 2, "style": 1, "tier_current": 1},
-            {"name": "TFT15_DragonFist", "num_units": 3, "style": 1, "tier_current": 1},
-            {"name": "TFT15_Duelist", "num_units": 4, "style": 2, "tier_current": 2},
-            {"name": "TFT15_Conqueror", "num_units": 2, "style": 1, "tier_current": 1},
-            {"name": "TFT15_Warband", "num_units": 4, "style": 2, "tier_current": 2},
-            {"name": "TFT15_Family", "num_units": 3, "style": 1, "tier_current": 1}
-        ]
-        
-        # Set 15 units (K.O. Coliseum champions)
-        set15_units = [
-            {"character_id": "TFT15_Jinx", "itemNames": ["TFT_Item_InfinityEdge", "TFT_Item_LastWhisper"], "name": "Jinx", "rarity": 4, "tier": 2},
-            {"character_id": "TFT15_Vi", "itemNames": ["TFT_Item_WarmogsArmor"], "name": "Vi", "rarity": 2, "tier": 2},
-            {"character_id": "TFT15_Ekko", "itemNames": ["TFT_Item_RabadonsDeathcap"], "name": "Ekko", "rarity": 5, "tier": 2},
-            {"character_id": "TFT15_Caitlyn", "itemNames": ["TFT_Item_GuinsoosRageblade"], "name": "Caitlyn", "rarity": 1, "tier": 2},
-            {"character_id": "TFT15_Jayce", "itemNames": [], "name": "Jayce", "rarity": 3, "tier": 1},
-            {"character_id": "TFT15_Powder", "itemNames": ["TFT_Item_BlueBuffs"], "name": "Powder", "rarity": 2, "tier": 2},
-            {"character_id": "TFT15_Vander", "itemNames": ["TFT_Item_DragonsClaw"], "name": "Vander", "rarity": 3, "tier": 1},
-            {"character_id": "TFT15_Silco", "itemNames": ["TFT_Item_Morellonomicon"], "name": "Silco", "rarity": 4, "tier": 2},
-            {"character_id": "TFT15_Heimerdinger", "itemNames": [], "name": "Heimerdinger", "rarity": 5, "tier": 1},
-            {"character_id": "TFT15_Warwick", "itemNames": ["TFT_Item_TitansResolve"], "name": "Warwick", "rarity": 1, "tier": 2},
-            {"character_id": "TFT15_Lucian", "itemNames": ["TFT_Item_BloodThirster"], "name": "Lucian", "rarity": 3, "tier": 2},
-            {"character_id": "TFT15_Ashe", "itemNames": ["TFT_Item_GiantSlayer"], "name": "Ashe", "rarity": 4, "tier": 1}
-        ]
-        
-        # Set 15 augments (current patch)
-        set15_augments = [
-            "TFT15_Augment_ConquerorEmblem",
-            "TFT15_Augment_WarbandHeart", 
-            "TFT15_Augment_MultistirkerCrest",
-            "TFT15_Augment_ComponentGrabBag",
-            "TFT15_Augment_TriForce",
-            "TFT15_Augment_PowerSnaxPlus",
-            "TFT15_Augment_RoleReinforcement"
-        ]
-        
-        # Generate 8 participants with Set 15 meta comps
-        participants = []
-        for i in range(8):
-            placement = i + 1
-            
-            # Simulate Set 15 meta performance (longer games, more complex)
-            if placement <= 4:  # Top 4
-                gold_left = random.randint(0, 25)
-                level = random.randint(8, 9)
-                last_round = random.randint(32, 42)  # Set 15 games are longer
-            else:  # Bottom 4
-                gold_left = random.randint(20, 70)
-                level = random.randint(6, 8)
-                last_round = random.randint(22, 32)
-            
-            participants.append({
-                "augments": random.sample(set15_augments, k=3),  # 3 augments in Set 15
-                "companion": {
-                    "content_ID": f"TFT15_Companion_{random.choice(['Starmaw', 'Hauntling', 'Poro'])}", 
-                    "item_ID": random.randint(1, 25),
-                    "species": f"Pet{random.choice(['Starmaw', 'Hauntling', 'Poro'])}"
-                },
-                "gold_left": gold_left,
-                "last_round": last_round,
-                "level": level,
-                "placement": placement,
-                "players_eliminated": placement - 1,
-                "puuid": f"set15_mock_puuid_euw_{i}",
-                "time_eliminated": 2400 + (placement * 200),  # Set 15 games are longer
-                "total_damage_to_players": max(0, 3000 - (placement * 300)),
-                "traits": random.sample(set15_traits, k=min(5, len(set15_traits))),
-                "units": random.sample(set15_units, k=min(random.randint(7, 9), len(set15_units))),
-                # Set 15 specific fields
-                "power_snax_used": random.randint(0, 2),
-                "role_bonuses": ["Tank", "Marksman"] if placement <= 4 else ["Fighter"]
-            })
-        
-        # Current timestamp for recent matches
-        current_timestamp = int(time.time() * 1000)
-        
-        return {
-            "metadata": {
-                "data_version": "15.3.567.1234",
-                "match_id": match_id,
-                "participants": [p["puuid"] for p in participants]
-            },
-            "info": {
-                "game_datetime": current_timestamp - random.randint(3600000, 86400000),  # 1-24 hours ago
-                "game_length": random.uniform(1800.0, 2800.0),  # 30-47 minutes (Set 15 games longer)
-                "game_version": "Version 15.3.567.1234",
-                "participants": participants,
-                "queue_id": 1100,  # TFT Ranked
-                "tft_game_type": "standard",
-                "tft_set_core_name": "TFTSet15",
-                "tft_set_number": 15
-            }
-        }
     
     async def get_current_patch_from_matches(self) -> Optional[str]:
         """Get current patch by checking recent match data - NO summoner API calls"""
         print("🎮 Checking patch from recent match data...")
         
-        if self.is_mock_mode():
-            return "15.3"  # Mock patch
+        # Validate API key first
+        self.validate_api_key()
         
         try:
             # Get challenger players (they already have PUUIDs!)
@@ -465,3 +764,48 @@ class RiotTFTAPI:
         except Exception as e:
             print(f"✗ Failed to get patch from match data: {e}")
             return None
+
+    async def find_earliest_set15_match(self) -> Optional[Dict[str, Any]]:
+        """Find the earliest Set 15 match to determine when the set launched"""
+        print("🔍 Searching for earliest Set 15 match...")
+        
+        earliest_match = None
+        earliest_timestamp = float('inf')
+        
+        # Get challenger players
+        players = await self.get_challenger_players()
+        if not players:
+            print("✗ Could not get challenger players")
+            return None
+        
+        # Check first few players to find earliest matches
+        for i, player in enumerate(players[:5]):  # Check first 5 players
+            puuid = player.get("puuid")
+            if not puuid:
+                continue
+                
+            print(f"Checking player {i+1}/5...")
+            
+            # Get more match history to find older matches
+            matches = await self.get_match_history(puuid, count=10)  # Get more matches
+            
+            for match_id in matches:
+                # Get match details WITHOUT patch filtering
+                match_data = await self.get_match_details(match_id, require_patch_15_3=False)
+                
+                if match_data and self._is_set15_match(match_data):
+                    info = match_data.get("info", {})
+                    game_datetime = info.get("game_datetime", 0)
+                    
+                    if game_datetime and game_datetime < earliest_timestamp:
+                        earliest_timestamp = game_datetime
+                        earliest_match = {
+                            "match_id": match_id,
+                            "timestamp": game_datetime,
+                            "date": datetime.fromtimestamp(game_datetime / 1000).strftime('%Y-%m-%d %H:%M:%S'),
+                            "game_version": info.get("game_version", "Unknown"),
+                            "set_number": info.get("tft_set_number", 0)
+                        }
+                        print(f"  Found earlier Set 15 match: {earliest_match['date']} (version: {earliest_match['game_version']})")
+        
+        return earliest_match

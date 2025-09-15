@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 class LLMProvider(str, Enum):
     OPENAI = "openai"
@@ -35,6 +35,17 @@ class Settings(BaseSettings):
     min_set_number: int = Field(15, description="Minimum set number to include in analysis")
     target_match_count: int = Field(10, description="Target number of Set 15 matches (low for dev key)")
     api_delay_seconds: int = Field(8, description="Seconds between API calls for dev key")
+    
+    # Patch 15.3 Filtering Configuration
+    require_patch_15_3: bool = Field(True, env="REQUIRE_PATCH_15_3", description="Only analyze matches from patch 15.3+ (2025/08/26 onwards)")
+    use_24h_filter: bool = Field(False, env="USE_24H_FILTER", description="Only get matches from the last 24 hours")
+    
+    # Development Configuration
+    use_cache: bool = Field(False, env="USE_CACHE", description="Use cached API responses to avoid rate limits during development")
+    
+    # Player Pool Configuration
+    include_tiers: List[str] = Field(["challenger", "grandmaster", "master"], description="Which tiers to include for analysis")
+    prioritize_winners: bool = Field(True, env="PRIORITIZE_WINNERS", description="Analyze recent match performance to prioritize winning players")
     
     def get_api_key_for_provider(self, provider: LLMProvider) -> Optional[str]:
         """Get the appropriate API key for the given provider"""

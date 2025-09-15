@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "version": "15.18.1",
+    "fetched_at": "2025-09-14T23:40:21.519848",
+    "source": "Riot Games Data Dragon API",
+    "endpoints_fetched": 8
+  },
+  "data_counts": {
+    "items": 362,
+    "augments": 345
+  },
+  "files_created": {
+    "items": "data/riot_meta_data/tft_items_20250914_234021.json",
+    "augments": "data/riot_meta_data/tft_augments_20250914_234021.json",
+    "raw_data": "data/riot_meta_data/tft_raw_data_20250914_234021.json"
+  },
+  "generated_at": "2025-09-14T23:40:21.545151"
+}
