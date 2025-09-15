@@ -69,14 +69,22 @@ class TFTMetaDataManager:
         if not data_dir.exists():
             return None
 
-        # Look for meta data files
+        # Look for meta data files (prefer enhanced data with compositions)
+        enhanced_files = list(data_dir.glob("tft15_enhanced_with_compositions_*.json"))
+        accurate_set15_files = list(data_dir.glob("tft15_accurate_set15_data_*.json"))
+        complete_traits_files = list(data_dir.glob("tft15_complete_traits_with_mighty_mech_*.json"))
+        requests_html_files = list(data_dir.glob("tft15_requests_html_extracted_*.json"))
+        complete_files = list(data_dir.glob("tft15_complete_meta_data_*.json"))
         meta_files = list(data_dir.glob("tft15_meta_data_*.json"))
 
-        if not meta_files:
+        # Prefer enhanced files first (with compositions), then accurate Set 15 data
+        all_files = enhanced_files + accurate_set15_files + complete_traits_files + requests_html_files + complete_files + meta_files
+
+        if not all_files:
             return None
 
         # Return the most recent file
-        return max(meta_files, key=lambda x: x.stat().st_mtime)
+        return max(all_files, key=lambda x: x.stat().st_mtime)
 
     def _get_empty_data_structure(self) -> Dict[str, Any]:
         """Get empty data structure."""
@@ -137,8 +145,9 @@ class TFTMetaDataManager:
                     "name": trait.get("name", "Unknown"),
                     "description": trait.get("description", ""),
                     "type": trait.get("type", "unknown"),
-                    "breakpoints": "|".join(map(str, trait.get("breakpoints", []))),
-                    "champions": "|".join(trait.get("champions", []))
+                    "synergy_thresholds": "|".join(map(str, trait.get("synergy_thresholds", trait.get("breakpoints", [])))),
+                    "champions": "|".join(trait.get("champions", [])),
+                    "total_champions": trait.get("total_champions", len(trait.get("champions", [])))
                 }
                 traits_data.append(flat_trait)
 
@@ -213,10 +222,14 @@ class TFTMetaDataManager:
                     "top4_rate": comp.get("top4_rate", 0.0),
                     "sample_size": comp.get("sample_size", 0),
                     "patch": comp.get("patch", ""),
-                    "champions": "|".join(comp.get("champions", [])),
-                    "traits": "|".join(comp.get("traits", [])),
+                    "primary_trait": comp.get("primary_trait", "Mixed"),
+                    "key_champions": comp.get("key_champions", []),
+                    "champions": "|".join(comp.get("key_champions", [])),
+                    "traits": "|".join(comp.get("synergy_traits", [])),
                     "items": "|".join(comp.get("items", [])),
-                    "source": comp.get("source", "unknown"),
+                    "source": comp.get("source", "meta_analysis"),
+                    "difficulty": comp.get("difficulty", "Medium"),
+                    "description": comp.get("description", ""),
                     "guide": comp.get("guide", "")
                 }
                 compositions_data.append(flat_comp)

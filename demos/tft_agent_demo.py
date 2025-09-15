@@ -10,7 +10,8 @@ import os
 from typing import List, Dict, Any, Optional
 
 # Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
 
 try:
     from src.tft_analyzer.agents.tft_agent import TFTAgent, create_tft_agent

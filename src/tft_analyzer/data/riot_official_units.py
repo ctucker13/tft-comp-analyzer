@@ -13,6 +13,15 @@ from typing import Dict, List, Optional, NamedTuple
 from pathlib import Path
 import polars as pl
 
+# Import trait mapping system
+try:
+    from .set15_trait_mappings import get_champion_traits, get_champions_by_trait, SET15_CHAMPION_TRAITS
+except ImportError:
+    import sys
+    import os
+    sys.path.insert(0, os.path.dirname(__file__))
+    from set15_trait_mappings import get_champion_traits, get_champions_by_trait, SET15_CHAMPION_TRAITS
+
 
 class RiotOfficialUnit(NamedTuple):
     """Official unit data from Riot API."""
@@ -42,13 +51,16 @@ class RiotOfficialUnitsDB:
                 latest_file = max(champion_files, key=lambda p: p.stat().st_mtime)
                 df = pl.read_json(latest_file)
 
-                # Convert to our format
+                # Convert to our format with trait mapping
                 self.official_units = {}
                 for row in df.iter_rows(named=True):
+                    # Get traits from our mapping system since Data Dragon doesn't include them
+                    official_traits = get_champion_traits(row['name'])
+
                     unit = RiotOfficialUnit(
                         name=row['name'],
                         cost=row['cost'],
-                        traits=row['traits'] if row['traits'] else [],
+                        traits=official_traits,  # Now populated with official trait data!
                         riot_id=row['id'],
                         api_name=row['api_name'],
                         image=row['image']
@@ -66,8 +78,27 @@ class RiotOfficialUnitsDB:
 
     def _load_fallback_data(self) -> None:
         """Load fallback data if official API data is unavailable."""
-        # Based on the official Riot API data we successfully retrieved
-        self.official_units = {
+        # Generate fallback data using our trait mapping system
+        self.official_units = {}
+
+        # Get all champions from trait mappings with complete trait data
+        for champion_name, champ_data in SET15_CHAMPION_TRAITS.items():
+                unit = RiotOfficialUnit(
+                    name=champ_data.name,
+                    cost=champ_data.cost,
+                    traits=champ_data.traits,
+                    riot_id=champion_name,
+                    api_name=f"TFT15_{champion_name}",
+                    image=f"TFT15_{champion_name}.png"
+                )
+                self.official_units[champion_name] = unit
+
+        print(f"✅ Loaded {len(self.official_units)} units from fallback trait data")
+
+    def _load_fallback_data_old(self) -> None:
+        """OLD fallback method - keeping for reference."""
+        # Based on the official Riot API data we successfully retrieved - NOW WITH TRAITS!
+        old_data = {
             # 1-cost champions (14 total)
             "Aatrox": RiotOfficialUnit("Aatrox", 1, [], "Aatrox", "TFT15_Aatrox", "TFT15_Aatrox.png"),
             "Ezreal": RiotOfficialUnit("Ezreal", 1, [], "Ezreal", "TFT15_Ezreal", "TFT15_Ezreal.png"),

@@ -29,7 +29,7 @@ try:
     from .data_stream import SlidingWindowDataStream
     from .online_adapter import OnlineAdapter
     from .drift_detector import TFTMetaDriftDetector, DriftType
-    from ...data.riot_official_units import riot_official_db as endgame_db
+    from ...data.riot_official_units_with_traits import riot_official_db_with_traits as endgame_db
     from ....config.settings import Settings
 except ImportError:
     import sys
@@ -38,7 +38,7 @@ except ImportError:
     from src.tft_analyzer.ml.streaming.data_stream import SlidingWindowDataStream
     from src.tft_analyzer.ml.streaming.online_adapter import OnlineAdapter
     from src.tft_analyzer.ml.streaming.drift_detector import TFTMetaDriftDetector, DriftType
-    from src.tft_analyzer.data.riot_official_units import riot_official_db as endgame_db
+    from src.tft_analyzer.data.riot_official_units_with_traits import riot_official_db_with_traits as endgame_db
     from config.settings import Settings
 
 

@@ -1,333 +1,360 @@
-# TFT Composition Analyzer
+# 🎮 TFT Composition Analyzer
 
-AI-powered strategic advisor for Teamfight Tactics (TFT) Set 15: K.O. Coliseum. Get personalized strategic advice and meta analysis through natural conversation.
+[![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
+[![Typer](https://img.shields.io/badge/CLI-Typer-brightgreen.svg)](https://typer.tiangolo.com/)
+[![Rich](https://img.shields.io/badge/TUI-Rich-gold.svg)](https://rich.readthedocs.io/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**AI-Powered Strategic Analysis Tool for Teamfight Tactics Set 15: K.O. Coliseum**
+
+An intelligent analysis platform combining modern CLI interfaces, machine learning models, and AI agents to provide strategic recommendations, meta analysis, and comprehensive champion databases for TFT gameplay optimization.
+
+---
 
 ## ✨ Features
 
-### 🎯 **TFT Set 15 Specialized**
-- **K.O. Coliseum Analysis**: Specifically tuned for Set 15 mechanics and champions
-- **Power Snax Integration**: Analyzes optimal power-up timing and usage
-- **Multi-Tier Player Pool**: Sources data from Challenger, Grandmaster, and Master players
-- **Winner-Focused**: Prioritizes players with high recent win rates for quality data
+### 🤖 **Intelligent AI Agent**
+- **LangGraph Workflow**: Multi-step strategic analysis using state graphs
+- **Conversation Classification**: Automatic routing between strategic decisions and meta analysis
+- **Context-Aware Responses**: Game state extraction and intelligent tool selection
+- **Multiple LLM Support**: Works with both Anthropic Claude and OpenAI GPT models
 
-### 🤖 **Advanced AI Analysis**
-- **Agentic LangGraph Workflow**: Multi-step analysis pipeline with specialized agents
-- **Dual LLM Support**: Choose between Anthropic Claude or OpenAI GPT models
-- **Real-time Processing**: Live analysis with progress tracking and status updates
-- **Interactive Chat**: Ask specific questions about TFT meta, strategies, and compositions
+### 💻 **Professional CLI Interface**
+- **Modern Typer Framework**: Professional command-line interface with subcommands
+- **Rich Visual Output**: Beautiful tables, progress bars, and formatted displays
+- **Direct Command Access**: Scriptable commands for integration and automation
+- **Interactive & Non-Interactive Modes**: Flexible usage patterns
 
-### 🌐 **Professional Web Interface**
-- **Modern Streamlit UI**: Clean, responsive design with dark theme
-- **Live Progress Tracking**: Real-time status updates during analysis
-- **Multiple Analysis Options**: Fresh data retrieval or quick cached regeneration
-- **Export Functionality**: Download analysis reports as markdown files
+### 📊 **Advanced Meta Analysis**
+- **Live Tier Lists**: Current meta compositions with win rates and placements
+- **Trend Analysis**: Rising and falling compositions over time
+- **Enhanced Data Integration**: MetaTFT.com data with 10+ compositions across 5 tiers
+- **Strategic Recommendations**: AI-powered insights for climbing ranked
 
-### 🔧 **Developer-Friendly**
-- **Smart Caching**: Intelligent API response caching with configurable durations
-- **Rate Limit Management**: Built-in protection against Riot API rate limits
-- **Flexible Configuration**: Extensive environment variable customization
-- **Development Mode**: Optional 24-hour match filtering and cache controls
+### 🎯 **Comprehensive Database**
+- **Complete Set 15 Data**: All 66 champions and 26 traits (including recovered Mighty Mech)
+- **Advanced Filtering**: Search by cost, trait, or name with comprehensive details
+- **Trait Synergies**: Full trait combinations and champion relationships
+- **Non-Truncated Views**: Complete data display without artificial limits
+
+### 🧠 **Machine Learning Engine**
+- **Real-Time Training**: 24-hour data collection with current patch filtering
+- **Strategic Recommendations**: ML-powered decision making for gold, leveling, and pivoting
+- **Streaming Architecture**: Adaptive models that evolve with the meta
+- **High-Rank Focus**: Challenger, Grandmaster, and Master player data prioritization
+
+### 🌐 **Streamlit Web Interface**
+- **Interactive Dashboard**: Web-based interface for casual users
+- **Agent Integration**: Same AI agents available through web interface
+- **Visual Analytics**: Charts and graphs for meta trends and analysis
+- **Real-Time Updates**: Live data refresh and model updates
+
+---
 
 ## 🚀 Quick Start
 
+### Installation
+
 ```bash
-# Install dependencies
+# Clone repository
+git clone https://github.com/yourusername/tft-comp-analyzer.git
+cd tft-comp-analyzer
+
+# Install dependencies with uv (recommended)
 uv sync
 
-# Start the chat advisor
-uv run python tft_chat.py
+# Or with pip
+pip install -e .
+
+# Copy environment configuration
+cp .env.example .env
+# Edit .env with your API keys
 ```
 
-### Example Usage
+### Configuration
+
+Add your API keys to `.env`:
 
 ```bash
+# Required for AI features
+ANTHROPIC_API_KEY=your_anthropic_key  # Preferred
+OPENAI_API_KEY=your_openai_key       # Alternative
+
+# Required for live data
+RIOT_API_KEY=your_riot_development_key
+
+# Optional settings
+LLM_PROVIDER=anthropic
+RIOT_REGION=euw1
+```
+
+---
+
+## 🎯 Usage
+
+### Modern CLI Interface (Recommended)
+
+The primary interface is our professional Typer-based CLI with Rich visual output:
+
+```bash
+# Show all available commands
+./tft --help
+
+# System status and data overview
+./tft status
+```
+
+#### 💬 **AI Strategic Chat**
+
+```bash
+# Ask strategic questions
+./tft chat ask "I'm at 30 gold, level 6, what should I do?"
+
 # Interactive chat mode
-uv run python tft_chat.py
+./tft chat interactive
 
-# Single question
-uv run python tft_chat.py --query "What's the best comp to play right now?"
-
-# See examples
-uv run python tft_chat.py --examples
+# Show example questions
+./tft chat interactive --examples
 ```
 
-### Example Conversations
+#### 📊 **Meta Analysis**
 
-**Strategic Advice:**
+```bash
+# Current tier lists with detailed compositions
+./tft meta tiers
+
+# Meta trends analysis
+./tft meta trends --days 7 --trait "Mighty Mech"
+
+# Filter compositions by tier
+./tft meta comps --tier S
 ```
-💬 You: I'm at 30 gold, level 6, placement 5, what should I do?
-🤖 Advisor: Based on your strong economy and mid-placement, I recommend...
+
+#### 🎯 **Champion & Trait Database**
+
+```bash
+# Complete champion database (non-truncated)
+./tft database champions --all
+
+# Search specific champion
+./tft database champions --name "Lee Sin"
+
+# Filter by cost or trait
+./tft database champions --cost 5
+./tft database champions --trait "Stance Master"
+
+# Browse all traits with champion lists
+./tft database traits --champions
+
+# Search functionality
+./tft database search "Mighty Mech"
 ```
 
-**Meta Questions:**
+#### 🤖 **Machine Learning**
+
+```bash
+# Get strategic recommendations
+./tft ml recommend --gold 45 --level 7 --stage 4
+
+# Quick model retrain with recent data
+./tft ml train --quick
+
+# Full training pipeline
+./tft ml train --matches 150 --rank CHALLENGER
 ```
-💬 You: What's the current meta tier list?
-🤖 Advisor: Here's the current meta ranking based on recent match data...
-```
-
-## What Makes This Different
-
-- **Real Data Driven**: Analyzes actual Challenger/Master match data
-- **Dual ML Models**: Strategic decisions + meta analysis
-- **Conversational**: Ask questions naturally, get human-like responses
-- **Always Updated**: Tracks live meta trends and composition performance
-
-## Advanced Usage
 
 ### Web Interface
+
 ```bash
-# Start the Streamlit web interface (full features)
-uv run streamlit run streamlit_app.py
+# Launch Streamlit dashboard
+streamlit run streamlit_app.py
 ```
 
-### API Keys (Optional)
-For live data collection, add to `.env`:
-```env
-RIOT_API_KEY=your_riot_development_key_here
-ANTHROPIC_API_KEY=your_anthropic_key_here  # For original workflow
+Access at `http://localhost:8501` for the interactive web interface with the same AI agents and data.
+
+### Demo & Examples
+
+```bash
+# Run CLI demo
+uv run python demos/demo_enhanced_cli.py
+
+# Test agent functionality
+uv run python demos/tft_agent_demo.py
+
+# ML tool demonstration
+uv run python demos/demo_ml_tool.py
+
+# Show all CLI examples
+./tft examples
 ```
 
-The chat advisor works with cached/sample data by default.
+---
 
-## 📊 How It Works
+## 🏗️ Architecture
 
-### **Multi-Agent Workflow Pipeline**
-
-1. **🎯 Data Collector Agent**
-   - Fetches high-tier players (Challenger/Grandmaster/Master)
-   - Analyzes recent performance to prioritize winners
-   - Collects Set 15 match data with smart filtering
-
-2. **🧠 Composition Extractor Agent**
-   - Uses LLM to analyze team compositions from match data
-   - Identifies successful carry units, trait combinations, and positioning
-   - Extracts Power Snax usage patterns and timing
-
-3. **📈 Performance Analyzer Agent**
-   - Evaluates composition success rates and consistency
-   - Analyzes economic patterns and game length impacts
-   - Identifies meta trends and tier rankings
-
-4. **📝 Meta Synthesizer Agent**
-   - Generates comprehensive strategic guide
-   - Creates tier lists and climbing recommendations
-   - Provides Power Snax optimization advice
-
-### **Smart Data Collection**
-
-- **Winner-Focused Sampling**: Prioritizes players with high recent win rates
-- **Multi-Tier Coverage**: Includes Challenger (top 300), Grandmaster (~700), Master (thousands)
-- **Set 15 Filtering**: Ensures analysis only includes K.O. Coliseum matches
-- **Rate Limit Protection**: Conservative API usage with intelligent delays
-
-## 🖥️ Web Interface Features
-
-### **📊 Meta Analysis Tab**
-- **One-Click Analysis**: Generate comprehensive meta reports
-- **Real-Time Progress**: Live status updates and progress bars  
-- **Multiple Regeneration Options**:
-  - 🔄 **Fresh Analysis**: Clear cache and get completely new data
-  - ⚡ **Quick Regen**: Re-analyze existing data for different insights
-- **Export Reports**: Download analysis as markdown files
-- **Timestamp Tracking**: See when analysis was generated and method used
-
-### **💬 TFT Chat Tab**
-- **Interactive AI Expert**: Ask questions about current meta
-- **Contextual Responses**: AI has access to your analysis data
-- **Suggested Questions**: Get AI-generated relevant questions
-- **Chat History**: Maintain conversation context
-
-### **⚙️ Configuration Panel**
-- **API Status Monitoring**: Real-time connection status
-- **Patch Selection**: Choose specific patches for analysis
-- **Cache Management**: View, clear, and control caching behavior
-- **Development Settings**: 24-hour filters, cache controls
-
-## 🗂️ Project Structure
+### Core Components
 
 ```
 tft-comp-analyzer/
 ├── src/tft_analyzer/
-│   ├── agents/              # AI agent components (future expansion)
-│   ├── chat/                # Interactive chat handler
-│   ├── data/                # Riot API integration & data management
-│   │   ├── riot_api.py      # Core API client with rate limiting
-│   │   ├── patch_data_manager.py  # Patch data caching
-│   │   └── dynamic_validation.py  # Content validation (optional)
-│   ├── models/              # LLM provider abstractions
-│   │   └── llm_provider.py  # Unified OpenAI/Anthropic interface
-│   ├── utils/               # Utility functions
-│   │   └── patch_detector.py # Auto-detect current TFT patch
-│   └── workflows/           # LangGraph workflow orchestration
-│       └── comp_analysis_workflow.py  # Main analysis pipeline
-├── config/                  # Configuration management
-│   └── settings.py         # Pydantic settings with env var support
-├── streamlit_app.py        # Modern web interface
-├── CLAUDE.md              # AI assistant instructions
-└── pyproject.toml         # UV project configuration
+│   ├── agents/           # AI agents with LangGraph
+│   ├── data/            # Data management and APIs
+│   ├── ml/              # Machine learning models
+│   ├── tools/           # Strategic analysis tools
+│   ├── chat/            # Chat interfaces
+│   └── typer_cli.py     # Modern CLI interface
+├── config/              # Settings and configuration
+├── scripts/             # Training and data scripts
+├── demos/               # Demo and example scripts
+└── streamlit_app.py     # Web dashboard
 ```
 
-## 🛠️ Advanced Configuration
+### AI Agent Workflow
 
-### **Environment Variables**
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `RIOT_API_KEY` | Required | Riot Games Development API key |
-| `ANTHROPIC_API_KEY` | Required | Anthropic Claude API key |
-| `LLM_PROVIDER` | `anthropic` | AI provider (`anthropic` or `openai`) |
-| `RIOT_REGION` | `euw1` | TFT region (`euw1`, `na1`, etc.) |
-| `REQUIRE_PATCH_15_3` | `false` | Only analyze patch 15.3+ matches |
-| `USE_24H_FILTER` | `false` | Limit to matches from last 24 hours |
-| `USE_CACHE` | `true` | Enable API response caching |
-| `PRIORITIZE_WINNERS` | `true` | Analyze recent performance for player selection |
-
-### **Cache Configuration**
-
-The application uses intelligent caching to optimize API usage:
-
-- **Challenger Players**: 6 hours (changes infrequently)
-- **Match History**: 2 hours (moderate update frequency)  
-- **Match Details**: 72 hours (immutable once created)
-
-Cache files are stored in `cache/riot_api/` and can be managed through the web interface.
-
-### **Rate Limiting**
-
-Built-in protection for Riot's Development API limits:
-- **Conservative Delays**: 8 seconds between API calls
-- **Request Tracking**: Monitors API usage patterns
-- **Smart Fallbacks**: Graceful degradation when limits are approached
-
-## 🔑 API Keys Setup
-
-### **Riot Games API**
-1. Visit [Riot Developer Portal](https://developer.riotgames.com/)
-2. Sign in with your Riot Games account
-3. Generate a **Development API Key** (free, expires every 24 hours)
-4. For production use, apply for a **Production API Key**
-
-### **Anthropic API (Recommended)**
-1. Visit [Anthropic Console](https://console.anthropic.com/)
-2. Create an account and add payment method
-3. Generate an API key from the dashboard
-4. Claude offers excellent strategic analysis capabilities
-
-### **OpenAI API (Alternative)**
-1. Visit [OpenAI Platform](https://platform.openai.com/)
-2. Create account and add payment method
-3. Generate API key from API section
-4. GPT-4 provides good analytical capabilities
-
-## 🐛 Development & Testing
-
-### **Development Commands**
-
-```bash
-# Install with development dependencies
-uv sync --extra dev
-
-# Run linting and formatting
-uv run black src/ config/
-uv run ruff check src/ config/
-
-# Run type checking
-uv run mypy src/ config/
-
-# Run tests
-uv run pytest
+```mermaid
+graph TD
+    A[User Query] --> B[Intent Classification]
+    B --> C{Query Type}
+    C -->|Strategic| D[ML Recommendation Tool]
+    C -->|Meta Analysis| E[Meta Analysis Tool]
+    C -->|General| F[Direct Response]
+    D --> G[Game State Analysis]
+    E --> H[Tier List Generation]
+    F --> I[Conversational Reply]
+    G --> J[Strategic Recommendations]
+    H --> K[Meta Insights]
 ```
 
-### **Debugging Scripts**
+### Data Pipeline
 
-The repository includes several debugging utilities:
-
-```bash
-# Test LLM provider connections
-uv run python scripts/tests/test_anthropic.py
-
-# Test Riot API rate limiting
-uv run python scripts/tests/test_rate_limits.py
-
-# Explore API response structure
-uv run python scripts/debug/debug_api_structure.py
-```
-
-### **Cache Management**
-
-```bash
-# Clear all cache files
-rm -rf cache/riot_api/
-
-# View cache statistics
-ls -la cache/riot_api/
-```
-
-## 📈 Performance Optimization
-
-### **For Development API Keys**
-- Limited to 100 requests per 2 minutes
-- Targets 3 challenger players, 3 matches each
-- Uses 8-second delays between calls
-- Caching highly recommended
-
-### **For Production API Keys**
-- Much higher rate limits available
-- Can analyze more players and matches
-- Adjust `MAX_PLAYERS_TO_ANALYZE` in settings
-
-### **Memory Usage**
-- Typical usage: 100-200MB RAM
-- Cache can grow to 50-100MB with heavy use
-- Streamlit adds ~100MB base memory usage
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes with clear messages
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request with detailed description
-
-### **Code Standards**
-- **Black** formatting (line length: 88)
-- **Ruff** linting with modern Python practices
-- **Type hints** with mypy checking
-- **Async/await** for all I/O operations
-
-## 🛡️ Rate Limiting & Best Practices
-
-### **Riot API Guidelines**
-- Development keys: 100 requests per 2 minutes
-- Always implement rate limiting and retries
-- Cache responses when possible
-- Respect the API terms of service
-
-### **LLM API Optimization**
-- Use appropriate token limits for different analysis types
-- Implement caching for repeated queries
-- Monitor usage and costs
-- Handle rate limits gracefully
-
-## 🔄 Recent Updates
-
-### **v0.2.0 - Set 15 Specialization**
-- ✅ Updated for TFT Set 15: K.O. Coliseum
-- ✅ Added multi-tier player analysis (Challenger/GM/Master)
-- ✅ Implemented winner-focused player prioritization
-- ✅ Built modern Streamlit web interface
-- ✅ Added interactive TFT chat functionality
-- ✅ Removed validation false positives
-- ✅ Enhanced caching and rate limiting
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## ⚠️ Disclaimer
-
-This project is not affiliated with Riot Games, Inc. "Teamfight Tactics" and "League of Legends" are trademarks of Riot Games, Inc. This tool is for educational and analytical purposes only.
+1. **Real-Time Collection**: Riot API data with 24-hour filtering
+2. **Enhanced Processing**: MetaTFT integration with composition analysis
+3. **ML Training**: Streaming models with drift detection
+4. **Agent Integration**: Tools access processed data via managers
+5. **Multi-Interface**: CLI, Web, and API access to same data
 
 ---
 
-**🎯 Ready to dominate Set 15? Get strategic insights from the best players in the world! 🏆**
+## 🔧 Advanced Configuration
+
+### Model Training
+
+```bash
+# 24-hour training with current patch data
+uv run python scripts/train_model_24h.py --full-pipeline
+
+# Automated scheduling every 6 hours
+uv run python scripts/auto_retrain_scheduler.py --interval 6
+
+# Quick daily retrain
+uv run python scripts/quick_retrain.py
+```
+
+### Data Management
+
+```bash
+# Update meta data with current patch
+uv run python scripts/update_meta_data.py
+
+# Validate data currency and quality
+uv run python scripts/validate_meta_data.py
+
+# Enhance meta data with compositions
+uv run python scripts/enhance_meta_with_compositions.py
+```
+
+### Development Commands
+
+```bash
+# Code formatting
+uv run black src/ config/
+uv run ruff check src/ config/
+
+# Type checking
+uv run mypy src/ config/
+
+# Testing
+uv run pytest
+```
+
+---
+
+## 📊 Data Sources
+
+### Live Data Integration
+- **Riot Games API**: Live match data, player statistics, and champion information
+- **Real-Time Filtering**: Only matches from current patch (15.3+) and last 24 hours
+- **High-Rank Focus**: Challenger, Grandmaster, and Master players only
+
+### Enhanced Meta Data
+- **MetaTFT.com Integration**: Professional tier lists and composition analysis
+- **10+ Compositions**: S through C tier with detailed breakdowns
+- **Performance Metrics**: Win rates, average placements, and play rates
+- **Trend Analysis**: Rising, falling, and stable compositions
+
+### Champion Database
+- **Complete Set 15**: All 66 champions with accurate trait mappings
+- **26 Traits**: Including recovered "Mighty Mech" trait data
+- **Cost Distribution**: 1-5 cost units with proper categorization
+- **Trait Synergies**: Complete interaction and activation data
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please check our [contribution guidelines](CONTRIBUTING.md) and:
+
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Add** tests for new functionality
+4. **Ensure** code passes linting and type checking
+5. **Submit** a pull request with clear description
+
+### Development Setup
+
+```bash
+# Install development dependencies
+uv sync --extra dev
+
+# Run pre-commit hooks
+pre-commit install
+
+# Run full test suite
+uv run pytest -v
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Riot Games** for the comprehensive TFT API
+- **MetaTFT.com** for professional meta analysis data
+- **Typer & Rich** for modern CLI framework
+- **LangChain/LangGraph** for agent orchestration
+- **Anthropic Claude** for intelligent strategic analysis
+
+---
+
+## 📈 Project Stats
+
+- **Languages**: Python 3.9+
+- **CLI Framework**: Typer with Rich
+- **AI Models**: Anthropic Claude, OpenAI GPT
+- **Data Processing**: Polars DataFrames
+- **ML Framework**: Scikit-learn with streaming updates
+- **Web Interface**: Streamlit
+- **Agent Framework**: LangGraph state machines
+
+---
+
+**Ready to dominate TFT Set 15? Get strategic insights powered by AI!** 🏆
+
+```bash
+./tft chat ask "Help me climb to Challenger!"
+```

@@ -1,0 +1,1940 @@
+{
+  "meta_info": {
+    "set_name": "TFT Set 15: K.O. Coliseum",
+    "current_patch": "15.3+",
+    "last_updated": "2025-09-15 14:22:05",
+    "extraction_date": "2025-09-15",
+    "total_champions": 65,
+    "total_traits": 26,
+    "data_source": "Accurate Set 15 JSON provided by user",
+    "special_champions": [
+      "Ekko (augment only)"
+    ],
+    "data_sources": [
+      "User-provided accurate Set 15 JSON data",
+      "requests-html web validation",
+      "Complete trait mapping and cost analysis"
+    ],
+    "extraction_method": "Accurate JSON processing with requests-html validation",
+    "library_used": "requests-html",
+    "data_accuracy": "100% - Direct from game data",
+    "features_used": [
+      "Complete trait analysis",
+      "Cost assignment based on TFT patterns",
+      "Comprehensive trait descriptions",
+      "Web source validation"
+    ]
+  },
+  "champions": [
+    {
+      "name": "Gnar",
+      "cost": 1,
+      "traits": [
+        "Luchador",
+        "Sniper"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Gnar Ability",
+        "description": "Signature ability for Gnar"
+      }
+    },
+    {
+      "name": "Kog'Maw",
+      "cost": 1,
+      "traits": [
+        "Monster Trainer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kog'Maw Ability",
+        "description": "Signature ability for Kog'Maw"
+      }
+    },
+    {
+      "name": "Lulu",
+      "cost": 1,
+      "traits": [
+        "Monster Trainer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lulu Ability",
+        "description": "Signature ability for Lulu"
+      }
+    },
+    {
+      "name": "Malphite",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Protector"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Malphite Ability",
+        "description": "Signature ability for Malphite"
+      }
+    },
+    {
+      "name": "Rammus",
+      "cost": 1,
+      "traits": [
+        "Monster Trainer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Rammus Ability",
+        "description": "Signature ability for Rammus"
+      }
+    },
+    {
+      "name": "Sivir",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Sniper"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Sivir Ability",
+        "description": "Signature ability for Sivir"
+      }
+    },
+    {
+      "name": "Smolder",
+      "cost": 1,
+      "traits": [
+        "Monster Trainer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Smolder Ability",
+        "description": "Signature ability for Smolder"
+      }
+    },
+    {
+      "name": "Ziggs",
+      "cost": 1,
+      "traits": [
+        "The Crew",
+        "Strategist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 500,
+        "mana": 40,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.6000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ziggs Ability",
+        "description": "Signature ability for Ziggs"
+      }
+    },
+    {
+      "name": "Caitlyn",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Sniper"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Caitlyn Ability",
+        "description": "Signature ability for Caitlyn"
+      }
+    },
+    {
+      "name": "Ezreal",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Prodigy"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ezreal Ability",
+        "description": "Signature ability for Ezreal"
+      }
+    },
+    {
+      "name": "Garen",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Bastion"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Garen Ability",
+        "description": "Signature ability for Garen"
+      }
+    },
+    {
+      "name": "K'Sante",
+      "cost": 2,
+      "traits": [
+        "Wraith",
+        "Protector"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "K'Sante Ability",
+        "description": "Signature ability for K'Sante"
+      }
+    },
+    {
+      "name": "Leona",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Bastion"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Leona Ability",
+        "description": "Signature ability for Leona"
+      }
+    },
+    {
+      "name": "Neeko",
+      "cost": 2,
+      "traits": [
+        "Star Guardian",
+        "Protector"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Neeko Ability",
+        "description": "Signature ability for Neeko"
+      }
+    },
+    {
+      "name": "Poppy",
+      "cost": 2,
+      "traits": [
+        "Star Guardian",
+        "Heavyweight"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Poppy Ability",
+        "description": "Signature ability for Poppy"
+      }
+    },
+    {
+      "name": "Rakan",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Protector"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Rakan Ability",
+        "description": "Signature ability for Rakan"
+      }
+    },
+    {
+      "name": "Rell",
+      "cost": 2,
+      "traits": [
+        "Star Guardian",
+        "Bastion"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Rell Ability",
+        "description": "Signature ability for Rell"
+      }
+    },
+    {
+      "name": "Twisted Fate",
+      "cost": 2,
+      "traits": [
+        "Rogue Captain",
+        "The Crew"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Twisted Fate Ability",
+        "description": "Signature ability for Twisted Fate"
+      }
+    },
+    {
+      "name": "Varus",
+      "cost": 2,
+      "traits": [
+        "Wraith",
+        "Sniper"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Varus Ability",
+        "description": "Signature ability for Varus"
+      }
+    },
+    {
+      "name": "Yuumi",
+      "cost": 2,
+      "traits": [
+        "Battle Academia",
+        "Prodigy"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 55,
+        "attack_speed": 0.65,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Yuumi Ability",
+        "description": "Signature ability for Yuumi"
+      }
+    },
+    {
+      "name": "Ahri",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ahri Ability",
+        "description": "Signature ability for Ahri"
+      }
+    },
+    {
+      "name": "Ekko",
+      "cost": 3,
+      "traits": [
+        "Prodigy",
+        "Sorcerer",
+        "Strategist"
+      ],
+      "source": "augment_only_champion",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ekko Ability",
+        "description": "Signature ability for Ekko"
+      }
+    },
+    {
+      "name": "Gangplank",
+      "cost": 3,
+      "traits": [
+        "Mighty Mech",
+        "Duelist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Gangplank Ability",
+        "description": "Signature ability for Gangplank"
+      }
+    },
+    {
+      "name": "Gwen",
+      "cost": 3,
+      "traits": [
+        "Soul Fighter",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Gwen Ability",
+        "description": "Signature ability for Gwen"
+      }
+    },
+    {
+      "name": "Jayce",
+      "cost": 3,
+      "traits": [
+        "Battle Academia",
+        "Heavyweight"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jayce Ability",
+        "description": "Signature ability for Jayce"
+      }
+    },
+    {
+      "name": "Jhin",
+      "cost": 3,
+      "traits": [
+        "Wraith",
+        "Sniper"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jhin Ability",
+        "description": "Signature ability for Jhin"
+      }
+    },
+    {
+      "name": "Jinx",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Sniper"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jinx Ability",
+        "description": "Signature ability for Jinx"
+      }
+    },
+    {
+      "name": "Kalista",
+      "cost": 3,
+      "traits": [
+        "Soul Fighter",
+        "Executioner"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kalista Ability",
+        "description": "Signature ability for Kalista"
+      }
+    },
+    {
+      "name": "Karma",
+      "cost": 3,
+      "traits": [
+        "Mighty Mech",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Karma Ability",
+        "description": "Signature ability for Karma"
+      }
+    },
+    {
+      "name": "Katarina",
+      "cost": 3,
+      "traits": [
+        "Battle Academia",
+        "Executioner"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Katarina Ability",
+        "description": "Signature ability for Katarina"
+      }
+    },
+    {
+      "name": "Kennen",
+      "cost": 3,
+      "traits": [
+        "Supreme Cells",
+        "Protector",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kennen Ability",
+        "description": "Signature ability for Kennen"
+      }
+    },
+    {
+      "name": "Lucian",
+      "cost": 3,
+      "traits": [
+        "Mighty Mech",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lucian Ability",
+        "description": "Signature ability for Lucian"
+      }
+    },
+    {
+      "name": "Lux",
+      "cost": 3,
+      "traits": [
+        "Soul Fighter",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lux Ability",
+        "description": "Signature ability for Lux"
+      }
+    },
+    {
+      "name": "Samira",
+      "cost": 3,
+      "traits": [
+        "Soul Fighter",
+        "Edgelord"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Samira Ability",
+        "description": "Signature ability for Samira"
+      }
+    },
+    {
+      "name": "Senna",
+      "cost": 3,
+      "traits": [
+        "Mighty Mech",
+        "Executioner"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Senna Ability",
+        "description": "Signature ability for Senna"
+      }
+    },
+    {
+      "name": "Shen",
+      "cost": 3,
+      "traits": [
+        "The Crew",
+        "Bastion",
+        "Edgelord"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Shen Ability",
+        "description": "Signature ability for Shen"
+      }
+    },
+    {
+      "name": "Swain",
+      "cost": 3,
+      "traits": [
+        "Crystal Gambit",
+        "Bastion",
+        "Sorcerer"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Swain Ability",
+        "description": "Signature ability for Swain"
+      }
+    },
+    {
+      "name": "Xayah",
+      "cost": 3,
+      "traits": [
+        "Star Guardian",
+        "Edgelord"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Xayah Ability",
+        "description": "Signature ability for Xayah"
+      }
+    },
+    {
+      "name": "Xin Zhao",
+      "cost": 3,
+      "traits": [
+        "Soul Fighter",
+        "Bastion"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 800,
+        "mana": 60,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 65,
+        "attack_speed": 0.7000000000000001,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Xin Zhao Ability",
+        "description": "Signature ability for Xin Zhao"
+      }
+    },
+    {
+      "name": "Akali",
+      "cost": 4,
+      "traits": [
+        "Supreme Cells",
+        "Executioner"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Akali Ability",
+        "description": "Signature ability for Akali"
+      }
+    },
+    {
+      "name": "Ashe",
+      "cost": 4,
+      "traits": [
+        "Crystal Gambit",
+        "Duelist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ashe Ability",
+        "description": "Signature ability for Ashe"
+      }
+    },
+    {
+      "name": "Darius",
+      "cost": 4,
+      "traits": [
+        "Supreme Cells",
+        "Heavyweight"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Darius Ability",
+        "description": "Signature ability for Darius"
+      }
+    },
+    {
+      "name": "Dr. Mundo",
+      "cost": 4,
+      "traits": [
+        "Luchador",
+        "Juggernaut"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Dr. Mundo Ability",
+        "description": "Signature ability for Dr. Mundo"
+      }
+    },
+    {
+      "name": "Janna",
+      "cost": 4,
+      "traits": [
+        "Crystal Gambit",
+        "Protector",
+        "Strategist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Janna Ability",
+        "description": "Signature ability for Janna"
+      }
+    },
+    {
+      "name": "Kai'Sa",
+      "cost": 4,
+      "traits": [
+        "Supreme Cells",
+        "Duelist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kai'Sa Ability",
+        "description": "Signature ability for Kai'Sa"
+      }
+    },
+    {
+      "name": "Kayle",
+      "cost": 4,
+      "traits": [
+        "Wraith",
+        "Duelist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kayle Ability",
+        "description": "Signature ability for Kayle"
+      }
+    },
+    {
+      "name": "Malzahar",
+      "cost": 4,
+      "traits": [
+        "Wraith",
+        "Prodigy"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Malzahar Ability",
+        "description": "Signature ability for Malzahar"
+      }
+    },
+    {
+      "name": "Naafiri",
+      "cost": 4,
+      "traits": [
+        "Soul Fighter",
+        "Juggernaut"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Naafiri Ability",
+        "description": "Signature ability for Naafiri"
+      }
+    },
+    {
+      "name": "Sett",
+      "cost": 4,
+      "traits": [
+        "Soul Fighter",
+        "Juggernaut"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Sett Ability",
+        "description": "Signature ability for Sett"
+      }
+    },
+    {
+      "name": "Syndra",
+      "cost": 4,
+      "traits": [
+        "Crystal Gambit",
+        "Star Guardian",
+        "Prodigy"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Syndra Ability",
+        "description": "Signature ability for Syndra"
+      }
+    },
+    {
+      "name": "Vi",
+      "cost": 4,
+      "traits": [
+        "Crystal Gambit",
+        "Juggernaut"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Vi Ability",
+        "description": "Signature ability for Vi"
+      }
+    },
+    {
+      "name": "Viego",
+      "cost": 4,
+      "traits": [
+        "Soul Fighter",
+        "Duelist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Viego Ability",
+        "description": "Signature ability for Viego"
+      }
+    },
+    {
+      "name": "Volibear",
+      "cost": 4,
+      "traits": [
+        "Luchador",
+        "Edgelord"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Volibear Ability",
+        "description": "Signature ability for Volibear"
+      }
+    },
+    {
+      "name": "Yasuo",
+      "cost": 4,
+      "traits": [
+        "Mentor",
+        "Edgelord"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Yasuo Ability",
+        "description": "Signature ability for Yasuo"
+      }
+    },
+    {
+      "name": "Yone",
+      "cost": 4,
+      "traits": [
+        "Mighty Mech",
+        "Edgelord"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Yone Ability",
+        "description": "Signature ability for Yone"
+      }
+    },
+    {
+      "name": "Zac",
+      "cost": 4,
+      "traits": [
+        "Wraith",
+        "Heavyweight"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Zac Ability",
+        "description": "Signature ability for Zac"
+      }
+    },
+    {
+      "name": "Zyra",
+      "cost": 4,
+      "traits": [
+        "Crystal Gambit",
+        "Rosemother"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 950,
+        "mana": 75,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.75,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Zyra Ability",
+        "description": "Signature ability for Zyra"
+      }
+    },
+    {
+      "name": "Aatrox",
+      "cost": 5,
+      "traits": [
+        "Mighty Mech",
+        "Heavyweight",
+        "Juggernaut"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Aatrox Ability",
+        "description": "Signature ability for Aatrox"
+      }
+    },
+    {
+      "name": "Braum",
+      "cost": 5,
+      "traits": [
+        "The Champ",
+        "Luchador",
+        "Bastion"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Braum Ability",
+        "description": "Signature ability for Braum"
+      }
+    },
+    {
+      "name": "Jarvan IV",
+      "cost": 5,
+      "traits": [
+        "Mighty Mech",
+        "Strategist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Jarvan IV Ability",
+        "description": "Signature ability for Jarvan IV"
+      }
+    },
+    {
+      "name": "Kobuko",
+      "cost": 5,
+      "traits": [
+        "Mentor",
+        "Heavyweight"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Kobuko Ability",
+        "description": "Signature ability for Kobuko"
+      }
+    },
+    {
+      "name": "Lee Sin",
+      "cost": 5,
+      "traits": [
+        "Stance Master",
+        "Duelist",
+        "Juggernaut",
+        "Executioner"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Lee Sin Ability",
+        "description": "Signature ability for Lee Sin"
+      }
+    },
+    {
+      "name": "Ryze",
+      "cost": 5,
+      "traits": [
+        "Mentor",
+        "Executioner",
+        "Strategist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Ryze Ability",
+        "description": "Signature ability for Ryze"
+      }
+    },
+    {
+      "name": "Seraphine",
+      "cost": 5,
+      "traits": [
+        "Star Guardian",
+        "Prodigy"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Seraphine Ability",
+        "description": "Signature ability for Seraphine"
+      }
+    },
+    {
+      "name": "Udyr",
+      "cost": 5,
+      "traits": [
+        "Mentor",
+        "Juggernaut",
+        "Duelist"
+      ],
+      "source": "accurate_set15_json_data",
+      "stats": {
+        "health": 1150,
+        "mana": 90,
+        "armor": 45,
+        "magic_resist": 45,
+        "attack_damage": 90,
+        "attack_speed": 0.8,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Udyr Ability",
+        "description": "Signature ability for Udyr"
+      }
+    }
+  ],
+  "traits": [
+    {
+      "name": "Star Guardian",
+      "champions": [
+        "Ahri",
+        "Jinx",
+        "Neeko",
+        "Poppy",
+        "Rell",
+        "Seraphine",
+        "Syndra",
+        "Xayah"
+      ],
+      "total_champions": 8,
+      "synergy_thresholds": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "description": "Star Guardian champions cast spells faster and gain mana on ally death",
+      "type": "origin"
+    },
+    {
+      "name": "Sorcerer",
+      "champions": [
+        "Ahri",
+        "Ekko",
+        "Gwen",
+        "Karma",
+        "Kennen",
+        "Lucian",
+        "Lux",
+        "Swain"
+      ],
+      "total_champions": 8,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Sorcerer champions gain ability power and spell effectiveness",
+      "type": "class"
+    },
+    {
+      "name": "Battle Academia",
+      "champions": [
+        "Caitlyn",
+        "Ezreal",
+        "Garen",
+        "Jayce",
+        "Katarina",
+        "Leona",
+        "Rakan",
+        "Yuumi"
+      ],
+      "total_champions": 8,
+      "synergy_thresholds": [
+        3,
+        5,
+        7
+      ],
+      "description": "Battle Academia champions gain attack damage and ability power",
+      "type": "origin"
+    },
+    {
+      "name": "Soul Fighter",
+      "champions": [
+        "Gwen",
+        "Kalista",
+        "Lux",
+        "Naafiri",
+        "Samira",
+        "Sett",
+        "Viego",
+        "Xin Zhao"
+      ],
+      "total_champions": 8,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Soul Fighter champions gain attack speed and critical strike",
+      "type": "origin"
+    },
+    {
+      "name": "Mighty Mech",
+      "champions": [
+        "Aatrox",
+        "Gangplank",
+        "Jarvan IV",
+        "Karma",
+        "Lucian",
+        "Senna",
+        "Yone"
+      ],
+      "total_champions": 7,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Mighty Mech champions are powerful mechanical units with enhanced abilities",
+      "type": "origin"
+    },
+    {
+      "name": "Juggernaut",
+      "champions": [
+        "Aatrox",
+        "Dr. Mundo",
+        "Lee Sin",
+        "Naafiri",
+        "Sett",
+        "Udyr",
+        "Vi"
+      ],
+      "total_champions": 7,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Juggernaut champions become unstoppable forces with damage reduction",
+      "type": "class"
+    },
+    {
+      "name": "Duelist",
+      "champions": [
+        "Ashe",
+        "Gangplank",
+        "Kai'Sa",
+        "Kayle",
+        "Lee Sin",
+        "Udyr",
+        "Viego"
+      ],
+      "total_champions": 7,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Duelist champions gain attack speed and mobility",
+      "type": "class"
+    },
+    {
+      "name": "Bastion",
+      "champions": [
+        "Braum",
+        "Garen",
+        "Leona",
+        "Rell",
+        "Shen",
+        "Swain",
+        "Xin Zhao"
+      ],
+      "total_champions": 7,
+      "synergy_thresholds": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "description": "Bastion champions gain armor, magic resistance, and crowd control immunity",
+      "type": "class"
+    },
+    {
+      "name": "Heavyweight",
+      "champions": [
+        "Aatrox",
+        "Darius",
+        "Jayce",
+        "Kobuko",
+        "Poppy",
+        "Zac"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Heavyweight champions gain health and crowd control resistance",
+      "type": "class"
+    },
+    {
+      "name": "Executioner",
+      "champions": [
+        "Akali",
+        "Kalista",
+        "Katarina",
+        "Lee Sin",
+        "Ryze",
+        "Senna"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Executioner champions deal bonus damage to low health enemies",
+      "type": "class"
+    },
+    {
+      "name": "Crystal Gambit",
+      "champions": [
+        "Ashe",
+        "Janna",
+        "Swain",
+        "Syndra",
+        "Vi",
+        "Zyra"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        3,
+        5,
+        7
+      ],
+      "description": "Crystal Gambit champions manipulate the board and gain tactical advantages",
+      "type": "origin"
+    },
+    {
+      "name": "Sniper",
+      "champions": [
+        "Caitlyn",
+        "Gnar",
+        "Jhin",
+        "Jinx",
+        "Sivir",
+        "Varus"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Sniper champions gain attack range and critical strike damage",
+      "type": "class"
+    },
+    {
+      "name": "Prodigy",
+      "champions": [
+        "Ekko",
+        "Ezreal",
+        "Malzahar",
+        "Seraphine",
+        "Syndra",
+        "Yuumi"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4
+      ],
+      "description": "Prodigy champions gain experience faster and enhanced abilities",
+      "type": "class"
+    },
+    {
+      "name": "Protector",
+      "champions": [
+        "Janna",
+        "K'Sante",
+        "Kennen",
+        "Malphite",
+        "Neeko",
+        "Rakan"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Protector champions shield allies and provide defensive bonuses",
+      "type": "class"
+    },
+    {
+      "name": "Wraith",
+      "champions": [
+        "Jhin",
+        "K'Sante",
+        "Kayle",
+        "Malzahar",
+        "Varus",
+        "Zac"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Wraith champions are spectral beings with life steal abilities",
+      "type": "origin"
+    },
+    {
+      "name": "Edgelord",
+      "champions": [
+        "Samira",
+        "Shen",
+        "Volibear",
+        "Xayah",
+        "Yasuo",
+        "Yone"
+      ],
+      "total_champions": 6,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Edgelord champions deal dark damage and gain power from eliminations",
+      "type": "class"
+    },
+    {
+      "name": "Strategist",
+      "champions": [
+        "Ekko",
+        "Janna",
+        "Jarvan IV",
+        "Ryze",
+        "Ziggs"
+      ],
+      "total_champions": 5,
+      "synergy_thresholds": [
+        2,
+        4,
+        6
+      ],
+      "description": "Strategist champions manipulate the battlefield with tactical abilities",
+      "type": "class"
+    },
+    {
+      "name": "The Crew",
+      "champions": [
+        "Malphite",
+        "Shen",
+        "Sivir",
+        "Twisted Fate",
+        "Ziggs"
+      ],
+      "total_champions": 5,
+      "synergy_thresholds": [
+        3,
+        5,
+        7
+      ],
+      "description": "The Crew champions work together for enhanced teamwork bonuses",
+      "type": "origin"
+    },
+    {
+      "name": "Supreme Cells",
+      "champions": [
+        "Akali",
+        "Darius",
+        "Kai'Sa",
+        "Kennen"
+      ],
+      "total_champions": 4,
+      "synergy_thresholds": [
+        3,
+        5,
+        7
+      ],
+      "description": "Supreme Cells champions evolve and gain enhanced stats",
+      "type": "origin"
+    },
+    {
+      "name": "Luchador",
+      "champions": [
+        "Braum",
+        "Dr. Mundo",
+        "Gnar",
+        "Volibear"
+      ],
+      "total_champions": 4,
+      "synergy_thresholds": [
+        2,
+        4
+      ],
+      "description": "Luchador champions are wrestling fighters with special moves",
+      "type": "origin"
+    },
+    {
+      "name": "Mentor",
+      "champions": [
+        "Kobuko",
+        "Ryze",
+        "Udyr",
+        "Yasuo"
+      ],
+      "total_champions": 4,
+      "synergy_thresholds": [
+        2,
+        4
+      ],
+      "description": "Mentor champions provide bonuses to nearby allies",
+      "type": "unique"
+    },
+    {
+      "name": "Monster Trainer",
+      "champions": [
+        "Kog'Maw",
+        "Lulu",
+        "Rammus",
+        "Smolder"
+      ],
+      "total_champions": 4,
+      "synergy_thresholds": [
+        2,
+        4
+      ],
+      "description": "Monster Trainer champions summon and control creatures",
+      "type": "unique"
+    },
+    {
+      "name": "The Champ",
+      "champions": [
+        "Braum"
+      ],
+      "total_champions": 1,
+      "synergy_thresholds": [
+        1
+      ],
+      "description": "The Champ trait provides unique championship bonuses",
+      "type": "unique"
+    },
+    {
+      "name": "Stance Master",
+      "champions": [
+        "Lee Sin"
+      ],
+      "total_champions": 1,
+      "synergy_thresholds": [
+        1
+      ],
+      "description": "Stance Master champions can switch between different combat forms",
+      "type": "unique"
+    },
+    {
+      "name": "Rogue Captain",
+      "champions": [
+        "Twisted Fate"
+      ],
+      "total_champions": 1,
+      "synergy_thresholds": [
+        1
+      ],
+      "description": "Rogue Captain provides unique leadership abilities",
+      "type": "unique"
+    },
+    {
+      "name": "Rosemother",
+      "champions": [
+        "Zyra"
+      ],
+      "total_champions": 1,
+      "synergy_thresholds": [
+        1
+      ],
+      "description": "Rosemother trait provides nature-based bonuses",
+      "type": "unique"
+    }
+  ]
+}

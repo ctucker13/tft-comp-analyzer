@@ -24,7 +24,7 @@ try:
     from ..tools.ml_recommendation_tool import get_tft_recommendation
     from ..tools.meta_analysis_tool import get_meta_tier_list, get_meta_trends
     from ..data.meta_data_manager import TFTMetaDataManager
-    from ..data.riot_official_units import riot_official_db as endgame_db
+    from ..data.riot_official_units_with_traits import riot_official_db_with_traits as endgame_db
     from ..models.llm_provider import LLMClient
     from ..ml.streaming.streaming_trainer import RealTimeStreamingTrainer
     from ...config.settings import Settings
@@ -36,7 +36,7 @@ except ImportError:
     from src.tft_analyzer.tools.ml_recommendation_tool import get_tft_recommendation
     from src.tft_analyzer.tools.meta_analysis_tool import get_meta_tier_list, get_meta_trends
     from src.tft_analyzer.data.meta_data_manager import TFTMetaDataManager
-    from src.tft_analyzer.data.riot_official_units import riot_official_db as endgame_db
+    from src.tft_analyzer.data.riot_official_units_with_traits import riot_official_db_with_traits as endgame_db
     from src.tft_analyzer.models.llm_provider import LLMClient
     from src.tft_analyzer.ml.streaming.streaming_trainer import RealTimeStreamingTrainer
     from config.settings import Settings
@@ -206,8 +206,8 @@ Classify the intent as one of:
    - Examples: "What should I do with 30 gold?", "I'm level 6, should I roll or level?"
    - Requires: Game state extraction + ML analysis
 
-2. META_ANALYSIS - User is asking about meta compositions, tier lists, or what's strong
-   - Examples: "What are the best comps?", "What's meta right now?", "Tier list?"
+2. META_ANALYSIS - User is asking about meta compositions, tier lists, trends, or what's strong
+   - Examples: "What are the best comps?", "What's meta right now?", "Tier list?", "What are the trends?", "What comps are rising?"
    - Requires: Meta analysis tool
 
 3. COMPOSITION_QUESTION - User is asking about specific team compositions
@@ -459,26 +459,26 @@ Return ONLY the JSON object, no other text.
         last_message = messages[-1].content.lower() if messages else ""
 
         try:
-            from ..tools.meta_analysis_tool import TFTMetaAnalysisTool
-            meta_tool = TFTMetaAnalysisTool(use_cached_data=True)
+            # Use the updated direct functions instead of the class methods
 
             # Determine what type of meta analysis to run
-            if any(keyword in last_message for keyword in ["tier", "best", "strongest", "top", "meta"]):
-                # Get tier list
-                tier_result = meta_tool.analyze_meta(analysis_type="tier_list")
-                state["tool_results"]["tier_list"] = tier_result
-
-            elif any(keyword in last_message for keyword in ["trend", "rising", "popular", "changing"]):
-                # Get meta trends
-                trends_result = meta_tool.analyze_meta(analysis_type="trends")
+            if any(keyword in last_message for keyword in ["trend", "rising", "popular", "changing"]):
+                # Get meta trends using the updated function
+                trends_result = get_meta_trends(refresh_data=False)
                 state["tool_results"]["meta_trends"] = trends_result
 
+            elif any(keyword in last_message for keyword in ["tier", "best", "strongest", "top", "meta"]):
+                # Get tier list using the updated function
+                tier_result = get_meta_tier_list(refresh_data=False)
+                state["tool_results"]["tier_list"] = tier_result
+
             else:
-                # Default to comprehensive meta analysis
-                comp_result = meta_tool.analyze_meta(analysis_type="current_meta")
-                state["tool_results"]["current_meta"] = comp_result
+                # Default to tier list for composition questions
+                tier_result = get_meta_tier_list(refresh_data=False)
+                state["tool_results"]["tier_list"] = tier_result
 
         except Exception as e:
+            print(f"Meta analysis error: {e}")  # Debug print
             state["tool_results"]["meta_analysis"] = f"Meta analysis failed: {str(e)}"
 
         return state

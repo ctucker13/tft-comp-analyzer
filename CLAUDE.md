@@ -61,40 +61,54 @@ cp .env.example .env
 
 ### Running the Application
 
-**Primary Interface - TFT Strategic Chat Advisor:**
+**Primary Interface - Modern Typer CLI:**
 ```bash
-# Interactive chat mode (recommended)
-uv run python tft_chat.py
+# Professional CLI with direct command access
+./tft --help
 
-# Single question mode
-uv run python tft_chat.py --query "I'm at 30 gold, level 6, what should I do?"
+# Quick strategic question
+./tft chat ask "I'm at 30 gold, level 6, what should I do?"
 
-# Show example questions
-uv run python tft_chat.py --examples
+# Interactive chat mode
+./tft chat interactive
+
+# Database queries (comprehensive, non-truncated)
+./tft database champions --name "Lee Sin"
+./tft database champions --all          # Complete 66 champion database
+./tft database traits --name "Mighty Mech"
+./tft database search "Star Guardian"
+
+# Meta analysis with enhanced data
+./tft meta tiers                        # S+ tier compositions with MetaTFT data
+./tft meta trends --days 7
+./tft meta comps --tier S
+
+# ML recommendations
+./tft ml recommend --gold 45 --level 7 --stage 4
+./tft ml train --quick                  # Quick retrain with recent data
+
+# System status
+./tft status
+
+# See all examples
+./tft examples
 ```
 
-**Agentic Model Interface - Intelligent Tool Routing:**
+**Alternative Interfaces:**
 ```bash
-# Interactive demo of agentic model (new)
-uv run python tft_agent_demo.py
+# Web dashboard (Streamlit)
+streamlit run streamlit_app.py
 
-# Show conversation examples and expected tool routing
-uv run python tft_agent_demo.py --examples
-
-# Run predefined test scenarios
-# Option 1: Run example scenarios, Option 2: Interactive mode, Option 3: Show examples
+# Demo scripts
+uv run python demos/demo_enhanced_cli.py
+uv run python demos/tft_agent_demo.py
+uv run python demos/demo_ml_tool.py
 ```
 
 **Advanced/Development:**
 ```bash
 # Original meta analysis workflow
 uv run python -m src.tft_analyzer.main
-
-# Legacy CLI interface (deprecated)
-uv run python src/tft_analyzer/cli.py
-
-# Demo ML functionality
-uv run python demo_ml_tool.py
 
 # Force mock mode (no API keys required)
 export RIOT_API_KEY="" && uv run python -m src.tft_analyzer.main
