@@ -1,0 +1,390 @@
+{
+  "meta_info": {
+    "set_name": "TFT Set 15: K.O. Coliseum",
+    "current_patch": "15.4",
+    "last_updated": "September 14, 2025",
+    "description": "Anime-inspired fighting tournament theme with Power Ups mechanic",
+    "key_mechanics": [
+      "Power Ups: Strong effects applied to 2 champions per game with 10+ options per champion",
+      "Mana Regen: Starting mana replaced with mana per second (1 Mana Regen = 1 Mana/sec)",
+      "Artifacts: Game-changing items obtained through augments and anvils"
+    ]
+  },
+  "compositions": {
+    "reroll_sniper": {
+      "name": "Sniper Reroll",
+      "tier": "S",
+      "comp_type": "reroll",
+      "traits": ["Sniper", "TheCrew", "Protector"],
+      "core_units": [
+        {"champion": "Gnar", "cost": 1, "priority": 1, "items": ["Infinity Edge", "Last Whisper", "Giant Slayer"]},
+        {"champion": "Caitlyn", "cost": 3, "priority": 2, "items": ["Statikk Shiv", "Rapid Firecannon", "Last Whisper"]},
+        {"champion": "Sivir", "cost": 1, "priority": 3, "items": ["Guinsoo's Rageblade", "Bloodthirster", "Flickerblade"]}
+      ],
+      "flexible_units": [
+        {"champion": "Jhin", "cost": 2, "synergy": "Sniper"},
+        {"champion": "Malphite", "cost": 1, "synergy": "TheCrew"},
+        {"champion": "Shen", "cost": 2, "synergy": "TheCrew"}
+      ],
+      "positioning": {
+        "carry_position": "back_corner",
+        "frontline": ["Malphite", "Shen"],
+        "backline": ["Gnar", "Sivir", "Caitlyn", "Jhin"]
+      },
+      "power_spikes": [
+        {"level": 6, "description": "3 Sniper, 3 TheCrew online"},
+        {"level": 7, "description": "Add Protector frontline"},
+        {"level": 8, "description": "Upgrade to 4 Sniper"}
+      ],
+      "pivot_options": ["battle_academia", "mighty_mech"],
+      "power_ups": {
+        "primary_targets": [
+          {"champion": "Gnar", "optimal_power_ups": ["Classy", "Attack Expert", "Spirit Sword"], "priority": 1},
+          {"champion": "Caitlyn", "optimal_power_ups": ["Critical Threat", "Max Speed", "Gather Force"], "priority": 2}
+        ],
+        "secondary_targets": [
+          {"champion": "Sivir", "optimal_power_ups": ["Critical Threat", "Classy", "Bludgeoner"], "priority": 3}
+        ]
+      }
+    },
+    "fast_8_starguardian": {
+      "name": "Fast 8 Star Guardian",
+      "tier": "S",
+      "comp_type": "fast_8",
+      "traits": ["StarGuardian", "Sorcerer", "Protector"],
+      "core_units": [
+        {"champion": "Seraphine", "cost": 5, "priority": 1, "items": ["Archangel's Staff", "Morellonomicon", "Jeweled Gauntlet"]},
+        {"champion": "Ahri", "cost": 3, "priority": 2, "items": ["Guinsoo's Rageblade", "Nashor's Tooth", "Spear of Shojin"]},
+        {"champion": "Rell", "cost": 1, "priority": 3, "items": ["Titan's Resolve", "Warmog's Armor", "Dragon's Claw"]}
+      ],
+      "flexible_units": [
+        {"champion": "Syndra", "cost": 1, "synergy": "StarGuardian"},
+        {"champion": "Xayah", "cost": 2, "synergy": "StarGuardian"},
+        {"champion": "Lux", "cost": 2, "synergy": "Sorcerer"}
+      ],
+      "positioning": {
+        "carry_position": "back_center",
+        "frontline": ["Rell", "Rakan"],
+        "backline": ["Seraphine", "Ahri", "Syndra", "Xayah", "Lux"]
+      },
+      "power_spikes": [
+        {"level": 7, "description": "5 Star Guardian synergy"},
+        {"level": 8, "description": "Access to 5-cost Seraphine"},
+        {"level": 9, "description": "8 Star Guardian Prismatic trait"}
+      ],
+      "pivot_options": ["crystal_gambit", "soul_fighter"],
+      "power_ups": {
+        "primary_targets": [
+          {"champion": "Seraphine", "optimal_power_ups": ["Mind Battery", "Power Font", "Star Sailor"], "priority": 1},
+          {"champion": "Ahri", "optimal_power_ups": ["Magic Expert", "Power Font", "Keen Eye"], "priority": 2}
+        ],
+        "secondary_targets": [
+          {"champion": "Rell", "optimal_power_ups": ["Adaptive Skin", "Unflinching", "Body Change"], "priority": 3}
+        ]
+      }
+    },
+    "battle_academia": {
+      "name": "Battle Academia",
+      "tier": "A",
+      "comp_type": "flex",
+      "traits": ["BattleAcademia", "Bastion", "Protector"],
+      "core_units": [
+        {"champion": "Jayce", "cost": 3, "priority": 1, "items": ["Bloodthirster", "Titan's Resolve", "Sterak's Gage"]},
+        {"champion": "Caitlyn", "cost": 3, "priority": 2, "items": ["Infinity Edge", "Last Whisper", "Giant Slayer"]},
+        {"champion": "Garen", "cost": 1, "priority": 3, "items": ["Warmog's Armor", "Bramble Vest", "Dragon's Claw"]}
+      ],
+      "flexible_units": [
+        {"champion": "Ezreal", "cost": 1, "synergy": "BattleAcademia"},
+        {"champion": "Katarina", "cost": 2, "synergy": "BattleAcademia"},
+        {"champion": "Rakan", "cost": 2, "synergy": "BattleAcademia"}
+      ],
+      "positioning": {
+        "carry_position": "front_center",
+        "frontline": ["Jayce", "Garen", "Rakan"],
+        "backline": ["Caitlyn", "Ezreal", "Katarina"]
+      },
+      "power_spikes": [
+        {"level": 6, "description": "4 Battle Academia online"},
+        {"level": 7, "description": "Full trait synergies"},
+        {"level": 8, "description": "7 Battle Academia Prismatic"}
+      ],
+      "pivot_options": ["mighty_mech", "reroll_sniper"],
+      "power_ups": {
+        "primary_targets": [
+          {"champion": "Jayce", "optimal_power_ups": ["Thrillseeker", "Unflinching", "Star Student"], "priority": 1},
+          {"champion": "Caitlyn", "optimal_power_ups": ["Critical Threat", "Max Speed", "Gather Force"], "priority": 2}
+        ],
+        "secondary_targets": [
+          {"champion": "Garen", "optimal_power_ups": ["Adaptive Skin", "Unflinching", "Body Change"], "priority": 3}
+        ]
+      }
+    },
+    "soul_fighter": {
+      "name": "Soul Fighter",
+      "tier": "B",
+      "comp_type": "slow_roll",
+      "traits": ["SoulFighter", "Executioner", "Sorcerer"],
+      "core_units": [
+        {"champion": "Kalista", "cost": 1, "priority": 1, "items": ["Infinity Edge", "Jeweled Gauntlet", "Sniper's Focus"]},
+        {"champion": "Lux", "cost": 2, "priority": 2, "items": ["Archangel's Staff", "Morellonomicon", "Blue Buff"]},
+        {"champion": "Naafiri", "cost": 1, "priority": 3, "items": ["Titan's Resolve", "Warmog's Armor", "Protector's Vow"]}
+      ],
+      "flexible_units": [
+        {"champion": "Xin Zhao", "cost": 2, "synergy": "SoulFighter"},
+        {"champion": "Lucian", "cost": 1, "synergy": "Sorcerer"},
+        {"champion": "Kennen", "cost": 1, "synergy": "Sorcerer"}
+      ],
+      "positioning": {
+        "carry_position": "back_corner",
+        "frontline": ["Naafiri", "Xin Zhao"],
+        "backline": ["Kalista", "Lux", "Lucian", "Kennen"]
+      },
+      "power_spikes": [
+        {"level": 6, "description": "4 Soul Fighter online"},
+        {"level": 7, "description": "Executioner + Sorcerer synergy"},
+        {"level": 8, "description": "3-star Soul Fighter units"}
+      ],
+      "pivot_options": ["executioner_vertical", "sorcerer_flex"],
+      "power_ups": {
+        "primary_targets": [
+          {"champion": "Kalista", "optimal_power_ups": ["Critical Threat", "Max Attack", "Annihilation"], "priority": 1},
+          {"champion": "Lux", "optimal_power_ups": ["Magic Expert", "Power Font", "Classy"], "priority": 2}
+        ],
+        "secondary_targets": [
+          {"champion": "Naafiri", "optimal_power_ups": ["Adaptive Skin", "Unflinching", "Body Change"], "priority": 3}
+        ]
+      }
+    },
+    "mighty_mech": {
+      "name": "Mighty Mech",
+      "tier": "A",
+      "comp_type": "flex",
+      "traits": ["MightyMech", "Juggernaut", "Sorcerer"],
+      "core_units": [
+        {"champion": "Aatrox", "cost": 1, "priority": 1, "items": ["Titan's Resolve", "Warmog's Armor", "Dragon's Claw"]},
+        {"champion": "Gangplank", "cost": 2, "priority": 2, "items": ["Guinsoo's Rageblade", "Bloodthirster", "Hand of Justice"]},
+        {"champion": "Lucian", "cost": 1, "priority": 3, "items": ["Archangel's Staff", "Jeweled Gauntlet", "Morellonomicon"]}
+      ],
+      "flexible_units": [
+        {"champion": "Dr. Mundo", "cost": 2, "synergy": "Juggernaut"},
+        {"champion": "Naafiri", "cost": 1, "synergy": "Juggernaut"},
+        {"champion": "Kennen", "cost": 1, "synergy": "Sorcerer"}
+      ],
+      "positioning": {
+        "carry_position": "front_center",
+        "frontline": ["Aatrox", "Gangplank", "Dr. Mundo"],
+        "backline": ["Lucian", "Kennen"]
+      },
+      "power_spikes": [
+        {"level": 6, "description": "3 Mighty Mech online"},
+        {"level": 7, "description": "Add Juggernaut synergy"},
+        {"level": 8, "description": "Mighty Mech Prismatic quest"}
+      ],
+      "pivot_options": ["juggernaut_vertical", "battle_academia"],
+      "power_ups": {
+        "primary_targets": [
+          {"champion": "Aatrox", "optimal_power_ups": ["Adaptive Skin", "Unflinching", "Body Change"], "priority": 1},
+          {"champion": "Gangplank", "optimal_power_ups": ["Max Attack", "Critical Threat", "Bludgeoner"], "priority": 2}
+        ],
+        "secondary_targets": [
+          {"champion": "Lucian", "optimal_power_ups": ["Magic Expert", "Power Font", "Classy"], "priority": 3}
+        ]
+      }
+    }
+  },
+  "items": {
+    "AD_carries": {
+      "core": ["Infinity Edge", "Last Whisper", "Bloodthirster"],
+      "situational": ["Giant Slayer", "Rapid Firecannon", "Hand of Justice"],
+      "artifacts": ["Flickerblade", "Sniper's Focus", "Gambler's Blade"]
+    },
+    "AP_carries": {
+      "core": ["Archangel's Staff", "Morellonomicon", "Jeweled Gauntlet"],
+      "situational": ["Blue Buff", "Nashor's Tooth", "Hextech Gunblade"],
+      "artifacts": ["Manazane", "Luden's Tempest", "Horizon Focus"]
+    },
+    "Tanks": {
+      "core": ["Warmog's Armor", "Titan's Resolve", "Dragon's Claw"],
+      "situational": ["Bramble Vest", "Protector's Vow", "Sterak's Gage"],
+      "artifacts": ["Zhonya's Paradox", "The Indomitable", "Randuin's Sanctum"]
+    },
+    "Utility": {
+      "core": ["Statikk Shiv", "Guinsoo's Rageblade", "Adaptive Helm"],
+      "situational": ["Ionic Spark", "Evenshroud", "Quicksilver"],
+      "artifacts": ["Talisman of Ascension", "Lightshield Crest", "Innervating Locket"]
+    }
+  },
+  "artifacts": {
+    "top_tier": [
+      {"name": "Flickerblade", "description": "Attacks grant 6% stacking Attack Speed. Every 5 attacks grant 3 AD and 4 AP. Top-performing artifact."},
+      {"name": "Manazane", "description": "After first cast, gain 100 Mana over 5 seconds. The GOAT of mana regeneration."},
+      {"name": "The Indomitable", "description": "Powerful defensive artifact. Best item Swain can build, gives low-3 average placement."}
+    ],
+    "situational": [
+      {"name": "Zhonya's Paradox", "description": "Shrinks holder, grants movement speed and immunity to Chill. 0.8 placement improvement."},
+      {"name": "Edge of Night", "description": "AP defensive artifact. 3-second immunity at 40% health with defensive stats."},
+      {"name": "Seeker's Armguard", "description": "Underutilized artifact in current meta"},
+      {"name": "Dawncore", "description": "Combat start: Blast target for 40% max Health. Repeat every 13 seconds."}
+    ],
+    "current_meta_notes": {
+      "patch": "15.4",
+      "date": "September 14, 2025",
+      "general_info": "Artifacts play major role in Set 15 meta. Obtain through augments and anvils every 10 player combats.",
+      "balance_changes": "Artifacts tuned down in patch 15.3 due to contributing to fast combat rounds."
+    }
+  },
+  "power_ups": {
+    "meta_info": {
+      "patch": "15.4",
+      "date": "September 14, 2025",
+      "mechanic": "Power Snax consumed at Stage 1-3 and 3-6, choose from 3 options per champion",
+      "total_available": "100+ unique Power Ups across all champions"
+    },
+    "universal_strong": [
+      {
+        "name": "Over 9000",
+        "description": "Start of each round, gain a random permanent stat bonus. Exceptional scaling.",
+        "tier": "S",
+        "best_for": ["Kai'Sa", "Seraphine", "Jayce"],
+        "category": "Scaling"
+      },
+      {
+        "name": "Shadow Clone",
+        "description": "Create a perfect copy with same items, 22% damage, 50% health.",
+        "tier": "S",
+        "best_for": ["Senna", "Malzahar", "Ahri"],
+        "category": "Combat"
+      },
+      {
+        "name": "Fan Service",
+        "description": "Xayah/Rakan gain stats based on partner's star level. Requires both units.",
+        "tier": "S",
+        "best_for": ["Xayah", "Rakan"],
+        "category": "Synergy"
+      },
+      {
+        "name": "Critical Threat",
+        "description": "Grants significant critical strike chance and damage bonus.",
+        "tier": "A",
+        "best_for": ["Caitlyn", "Sivir", "Kalista", "Gnar"],
+        "category": "AD Carry"
+      },
+      {
+        "name": "Magic Expert",
+        "description": "Enhances ability power and mana efficiency.",
+        "tier": "A",
+        "best_for": ["Ahri", "Seraphine", "Lux", "Lucian"],
+        "category": "AP Carry"
+      }
+    ],
+    "champion_specific": {
+      "Seraphine": {
+        "power_ups": ["Mind Battery", "Power Font", "Star Sailor"],
+        "optimal": "Mind Battery",
+        "description": "Mind Battery provides incredible mana regeneration for frequent ultimates"
+      },
+      "Ahri": {
+        "power_ups": ["Magic Expert", "Power Font", "Keen Eye"],
+        "optimal": "Magic Expert",
+        "description": "Magic Expert amplifies her spell damage and frequency"
+      },
+      "Gnar": {
+        "power_ups": ["Classy", "Attack Expert", "Spirit Sword"],
+        "optimal": "Classy",
+        "description": "Classy provides consistent damage boost throughout combat"
+      },
+      "Caitlyn": {
+        "power_ups": ["Critical Threat", "Max Speed", "Gather Force"],
+        "optimal": "Critical Threat",
+        "description": "Critical Threat maximizes her long-range damage potential"
+      },
+      "Sivir": {
+        "power_ups": ["Critical Threat", "Classy", "Bludgeoner"],
+        "optimal": "Critical Threat",
+        "description": "Critical Threat synergizes perfectly with her attack speed scaling"
+      },
+      "Jayce": {
+        "power_ups": ["Thrillseeker", "Unflinching", "Star Student"],
+        "optimal": "Thrillseeker",
+        "description": "Thrillseeker provides bonus damage when health is low"
+      },
+      "Kai'Sa": {
+        "power_ups": ["Over 9000", "Bullet Hell", "Max Attack"],
+        "optimal": "Over 9000",
+        "description": "Over 9000 provides unmatched scaling potential"
+      },
+      "Xayah": {
+        "power_ups": ["Fan Service", "Critical Threat", "Classy"],
+        "optimal": "Fan Service",
+        "description": "Fan Service when paired with Rakan creates powerful synergy"
+      },
+      "Rakan": {
+        "power_ups": ["Fan Service", "Unflinching", "Body Change"],
+        "optimal": "Fan Service",
+        "description": "Fan Service when paired with Xayah provides mutual benefits"
+      }
+    },
+    "strategy_guide": {
+      "timing": [
+        "Stage 1-3: Prioritize your main carry",
+        "Stage 3-6: Focus on frontline or secondary carry",
+        "Choose based on current board strength and future plans"
+      ],
+      "priority_system": [
+        "1st Priority: Main damage dealer (carry)",
+        "2nd Priority: Secondary carry or key frontline",
+        "3rd Priority: Utility or flex units",
+        "Avoid: Using on units you plan to sell"
+      ],
+      "meta_tips": [
+        "Over 9000 and Shadow Clone work on any champion",
+        "Fan Service requires both Xayah and Rakan to be effective",
+        "Rare Treat synergizes with Monster units (Rammus, Smolder, Kog'Maw)",
+        "Body Change creates interesting tank/carry hybrid builds"
+      ]
+    }
+  },
+  "positioning_guides": {
+    "anti_assassin": {
+      "description": "Protect carries from assassins",
+      "formation": "corner_carry_with_tanks"
+    },
+    "spread_formation": {
+      "description": "Counter AOE damage",
+      "formation": "units_spaced_apart"
+    },
+    "clump_formation": {
+      "description": "Maximize trait bonuses and healing",
+      "formation": "units_grouped_together"
+    }
+  },
+  "current_augments": {
+    "meta_info": {
+      "patch": "15.4",
+      "date": "September 14, 2025",
+      "tiers": ["Silver", "Gold", "Prismatic"],
+      "timing": "Offered at stages 2-1, 3-2, and 4-2"
+    },
+    "top_tier": [
+      {"name": "Adaptive Style", "tier": "Gold", "description": "Gain 1 Thief's Gloves", "category": "Item"},
+      {"name": "All That Shimmers", "tier": "Prismatic", "description": "After 3 players eliminated, gain 92 gold", "category": "Economy"},
+      {"name": "Backup Dancers", "tier": "Gold", "description": "Every 3s, bench slots grant team 3.5% AS per slot", "category": "Combat"},
+      {"name": "Legendary Legend", "tier": "Prismatic", "description": "Gain 2-star unit + 1 gold per level up", "category": "Economy"}
+    ],
+    "economy": [
+      {"name": "AFK", "description": "Cannot act for 3 rounds, then gain 20 gold"},
+      {"name": "Better Together", "description": "Get +3 augment rerolls, gain 7 gold"},
+      {"name": "Golden Ticket", "description": "Gain random Silver augment + 7 gold"}
+    ],
+    "combat": [
+      {"name": "Built Different", "description": "Isolated pairs gain 12% AS and 12 Armor"},
+      {"name": "Close Knit", "description": "Units next to 1750+ HP ally take 7% less damage"},
+      {"name": "Loot Subscription", "description": "Enemies 25% chance to drop loot when killed"}
+    ],
+    "trait_specific": [
+      {"name": "Battle Academia Heart", "description": "BA champions upgrade abilities and gain Potential%"},
+      {"name": "Duelist Heart", "description": "On attack, gain 2 AD/AP stacking to 20 times"},
+      {"name": "Bastion Crown", "description": "Gain Bastion Emblem + Giant's Belt + Leona"}
+    ]
+  }
+}

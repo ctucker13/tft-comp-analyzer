@@ -1,0 +1,383 @@
+{
+  "meta_info": {
+    "set_name": "TFT Set 15: K.O. Coliseum",
+    "current_patch": "14.24",
+    "last_updated": "2025-09-14 22:26:52",
+    "data_sources": [
+      "https://www.metatft.com",
+      "https://tftactics.gg",
+      "https://mobalytics.gg/tft",
+      "https://app.mobalytics.gg/tft",
+      "https://tactics.tools"
+    ]
+  },
+  "champions": [
+    {
+      "name": "Gnar",
+      "cost": 1,
+      "traits": [
+        "TheCrew",
+        "Bruiser"
+      ],
+      "stats": {
+        "health": 650,
+        "mana": 50,
+        "armor": 30,
+        "magic_resist": 30,
+        "attack_damage": 55,
+        "attack_speed": 0.6,
+        "attack_range": 1
+      },
+      "ability": {
+        "name": "Boomerang Throw",
+        "description": "Throws a boomerang that deals damage"
+      }
+    },
+    {
+      "name": "Caitlyn",
+      "cost": 2,
+      "traits": [
+        "Sniper",
+        "Battle Academia"
+      ],
+      "stats": {
+        "health": 550,
+        "mana": 70,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 65,
+        "attack_speed": 0.75,
+        "attack_range": 4
+      },
+      "ability": {
+        "name": "Headshot",
+        "description": "Deals massive damage to target"
+      }
+    },
+    {
+      "name": "Sivir",
+      "cost": 3,
+      "traits": [
+        "Sniper",
+        "TheCrew"
+      ],
+      "stats": {
+        "health": 750,
+        "mana": 80,
+        "armor": 35,
+        "magic_resist": 35,
+        "attack_damage": 75,
+        "attack_speed": 0.8,
+        "attack_range": 3
+      },
+      "ability": {
+        "name": "Ricochet",
+        "description": "Attacks bounce between enemies"
+      }
+    },
+    {
+      "name": "Seraphine",
+      "cost": 5,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 850,
+        "mana": 120,
+        "armor": 25,
+        "magic_resist": 25,
+        "attack_damage": 50,
+        "attack_speed": 0.6,
+        "attack_range": 4
+      },
+      "ability": {
+        "name": "Encore",
+        "description": "Powerful AoE ability that scales with Star Guardian"
+      }
+    },
+    {
+      "name": "Ahri",
+      "cost": 4,
+      "traits": [
+        "Star Guardian",
+        "Sorcerer"
+      ],
+      "stats": {
+        "health": 700,
+        "mana": 100,
+        "armor": 20,
+        "magic_resist": 20,
+        "attack_damage": 45,
+        "attack_speed": 0.65,
+        "attack_range": 3
+      },
+      "ability": {
+        "name": "Orb of Deception",
+        "description": "Fires an orb that damages enemies"
+      }
+    }
+  ],
+  "traits": [
+    {
+      "name": "Sniper",
+      "description": "Snipers gain Attack Range and deal more damage",
+      "type": "class",
+      "breakpoints": [
+        2,
+        3,
+        4
+      ],
+      "champions": [
+        "Caitlyn",
+        "Sivir"
+      ]
+    },
+    {
+      "name": "Star Guardian",
+      "description": "When Star Guardians cast, other Star Guardians gain mana",
+      "type": "origin",
+      "breakpoints": [
+        3,
+        5,
+        7,
+        9
+      ],
+      "champions": [
+        "Seraphine",
+        "Ahri"
+      ]
+    },
+    {
+      "name": "TheCrew",
+      "description": "TheCrew champions gain Health and deal more damage",
+      "type": "origin",
+      "breakpoints": [
+        2,
+        4,
+        6
+      ],
+      "champions": [
+        "Gnar",
+        "Sivir"
+      ]
+    },
+    {
+      "name": "Bruiser",
+      "description": "Bruisers gain Health",
+      "type": "class",
+      "breakpoints": [
+        2,
+        4,
+        6
+      ],
+      "champions": [
+        "Gnar"
+      ]
+    },
+    {
+      "name": "Sorcerer",
+      "description": "Sorcerers gain Ability Power",
+      "type": "class",
+      "breakpoints": [
+        2,
+        4,
+        6,
+        8
+      ],
+      "champions": [
+        "Seraphine",
+        "Ahri"
+      ]
+    }
+  ],
+  "items": [
+    {
+      "name": "Infinity Edge",
+      "description": "+75% Critical Strike Damage",
+      "type": "AD",
+      "components": [
+        "B.F. Sword",
+        "Glove"
+      ],
+      "unique": false
+    },
+    {
+      "name": "Archangel's Staff",
+      "description": "+20 Ability Power, +20 Mana",
+      "type": "AP",
+      "components": [
+        "Tear",
+        "Rod"
+      ],
+      "unique": false
+    },
+    {
+      "name": "Warmog's Armor",
+      "description": "+800 Health",
+      "type": "Tank",
+      "components": [
+        "Belt",
+        "Belt"
+      ],
+      "unique": false
+    },
+    {
+      "name": "Last Whisper",
+      "description": "Physical damage ignores Armor",
+      "type": "AD",
+      "components": [
+        "Sword",
+        "Glove"
+      ],
+      "unique": false
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "Flickerblade",
+      "description": "Attacks grant 6% stacking Attack Speed. Every 5 attacks grant 3 AD and 4 AP.",
+      "tier": "S",
+      "type": "offensive"
+    },
+    {
+      "name": "Manazane",
+      "description": "After first cast, gain 100 Mana over 5 seconds.",
+      "tier": "S",
+      "type": "utility"
+    },
+    {
+      "name": "The Indomitable",
+      "description": "Powerful defensive artifact for frontline units.",
+      "tier": "A",
+      "type": "defensive"
+    },
+    {
+      "name": "Zhonya's Paradox",
+      "description": "Shrinks holder, grants movement speed and immunity to Chill.",
+      "tier": "A",
+      "type": "utility"
+    }
+  ],
+  "power_ups": [
+    {
+      "name": "Over 9000",
+      "description": "Start of each round, gain a random permanent stat bonus",
+      "tier": "S",
+      "category": "Scaling",
+      "best_for": [
+        "Kai'Sa",
+        "Seraphine"
+      ]
+    },
+    {
+      "name": "Shadow Clone",
+      "description": "Create a perfect copy with same items, 22% damage, 50% health",
+      "tier": "S",
+      "category": "Combat",
+      "best_for": [
+        "Senna",
+        "Malzahar"
+      ]
+    },
+    {
+      "name": "Critical Threat",
+      "description": "Grants significant critical strike chance and damage bonus",
+      "tier": "A",
+      "category": "AD Carry",
+      "best_for": [
+        "Caitlyn",
+        "Sivir"
+      ]
+    },
+    {
+      "name": "Magic Expert",
+      "description": "Enhances ability power and mana efficiency",
+      "tier": "A",
+      "category": "AP Carry",
+      "best_for": [
+        "Ahri",
+        "Seraphine"
+      ]
+    }
+  ],
+  "augments": [
+    {
+      "name": "Trade Sector",
+      "description": "Gain a free Shop refresh",
+      "tier": 1,
+      "type": "economy"
+    },
+    {
+      "name": "Cybernetic Uplink",
+      "description": "Your champions holding an item gain Health",
+      "tier": 2,
+      "type": "combat"
+    },
+    {
+      "name": "Prismatic Ticket",
+      "description": "Gain a Prismatic augment next",
+      "tier": 3,
+      "type": "prismatic"
+    }
+  ],
+  "compositions": [
+    {
+      "name": "Reroll Sniper",
+      "tier": "S",
+      "avg_placement": 3.2,
+      "play_rate": 0.15,
+      "win_rate": 0.22,
+      "top4_rate": 0.65,
+      "sample_size": 1500,
+      "champions": [
+        "Gnar",
+        "Caitlyn",
+        "Sivir",
+        "Poppy",
+        "Rell",
+        "Gangplank"
+      ],
+      "traits": [
+        "Sniper",
+        "TheCrew",
+        "Protector"
+      ],
+      "items": [
+        "Infinity Edge",
+        "Last Whisper",
+        "Bloodthirster"
+      ],
+      "source": "fallback"
+    },
+    {
+      "name": "Fast 8 Star Guardian",
+      "tier": "S",
+      "avg_placement": 3.1,
+      "play_rate": 0.12,
+      "win_rate": 0.25,
+      "top4_rate": 0.68,
+      "sample_size": 1200,
+      "champions": [
+        "Seraphine",
+        "Ahri",
+        "Lux",
+        "Rell",
+        "Jayce",
+        "Poppy"
+      ],
+      "traits": [
+        "Star Guardian",
+        "Sorcerer",
+        "Battle Academia"
+      ],
+      "items": [
+        "Archangel's Staff",
+        "Morellonomicon",
+        "Jeweled Gauntlet"
+      ],
+      "source": "fallback"
+    }
+  ],
+  "meta_tier_list": {}
+}

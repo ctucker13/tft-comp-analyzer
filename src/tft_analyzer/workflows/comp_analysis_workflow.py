@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 from langgraph.graph import StateGraph, END, START
 from typing import Dict, Any, List, TypedDict
 from ..models.llm_provider import LLMClient
@@ -38,11 +39,20 @@ class CompAnalysisWorkflow:
         return workflow.compile()
     
     async def _collect_set15_match_data(self, state: AnalysisState) -> AnalysisState:
-        """Collect Set 15 match data - PUUID is directly available from challenger data"""
-        print("Collecting Set 15 match data...")
+        """Collect Set 15 match data from high-tier players (Challenger, Grandmaster, Master)"""
+        print("Collecting Set 15 match data from high-tier players...")
         try:
-            players = await self.riot_api.get_challenger_players()
-            print(f"Found {len(players)} challenger players")
+            # Get players from multiple tiers for more diverse data
+            include_tiers = getattr(self.settings, 'include_tiers', ['challenger', 'grandmaster', 'master'])
+            players = await self.riot_api.get_high_tier_players(include_tiers=include_tiers)
+            print(f"Found {len(players)} high-tier players across multiple tiers")
+            
+            # Optionally prioritize players who are winning more games
+            prioritize_winners = getattr(self.settings, 'prioritize_winners', True)
+            if prioritize_winners and len(players) > 5:
+                print("🏆 Analyzing recent performance to prioritize winning players...")
+                players = await self.riot_api.get_winning_players_from_recent_matches(players)
+                print(f"Prioritized {len(players)} players based on recent win rates")
             
             set15_matches = []
             target_matches = self.settings.target_match_count
@@ -54,61 +64,72 @@ class CompAnalysisWorkflow:
             for i, player in enumerate(players[:max_players]):
                 print(f"\nProcessing player {i+1}/{max_players}...")
                 
-                # PUUID is directly available from challenger data!
+                # PUUID is directly available from high-tier player data!
                 puuid = player.get("puuid", "")
                 league_points = player.get("leaguePoints", 0)
                 wins = player.get("wins", 0)
                 losses = player.get("losses", 0)
+                tier = player.get("tier", "UNKNOWN")
+                rank = player.get("rank", "")
                 
                 if not puuid:
-                    print("  No PUUID in challenger data, skipping...")
+                    print(f"  No PUUID in {tier} data, skipping...")
                     continue
                 
-                print(f"  Player: {league_points} LP ({wins}W/{losses}L) | PUUID: {puuid[:20]}...")
+                print(f"  Player: {tier} {rank} - {league_points} LP ({wins}W/{losses}L) | PUUID: {puuid[:20]}...")
                 
-                if self.riot_api.is_mock_mode() or puuid.startswith("mock_"):
-                    print("  Using mock data...")
-                    matches = await self.riot_api.get_match_history(puuid, count=3)
+                # Get matches with rate limiting - optionally filter to last 24 hours
+                use_24h_filter = getattr(self.settings, 'use_24h_filter', False)
+                matches = []
+                
+                if use_24h_filter:
+                    matches = await self.riot_api.get_match_history(puuid, count=self.settings.max_matches_per_player, hours_back=24)
+                    print(f"  Found {len(matches)} matches from last 24 hours")
                     
-                    for match_id in matches:
-                        match_details = await self.riot_api.get_match_details(match_id)
-                        if match_details:
-                            set15_matches.append(match_details)
-                            print(f"  Added mock Set 15 match")
-                    
-                    successful_players += 1
+                    # If no matches in 24h, fall back to 7-day timeframe
+                    if len(matches) == 0:
+                        print("  No matches in 24h, trying last 7 days...")
+                        matches = await self.riot_api.get_match_history(puuid, count=self.settings.max_matches_per_player, hours_back=168)  # 7 days = 168 hours
+                        print(f"  Found {len(matches)} matches in last 7 days")
+                        
+                        # If still no matches in 7 days, try without time filter (default recent matches)
+                        if len(matches) == 0:
+                            print("  No matches in 7 days, trying all recent matches...")
+                            matches = await self.riot_api.get_match_history(puuid, count=self.settings.max_matches_per_player)
+                            print(f"  Found {len(matches)} recent matches (no time limit)")
                 else:
-                    # Real API call - skip the summoner lookup step entirely!
-                    print(f"  Using PUUID directly from challenger data")
-                    
-                    # Get matches with rate limiting
                     matches = await self.riot_api.get_match_history(puuid, count=self.settings.max_matches_per_player)
                     print(f"  Found {len(matches)} recent matches")
-                    
-                    matches_processed = 0
-                    for j, match_id in enumerate(matches):
-                        if matches_processed >= 2:  # Limit to 2 matches per player for rate limits
-                            break
-                            
-                        print(f"    Processing match {j+1}...")
-                        match_details = await self.riot_api.get_match_details(match_id)
+                
+                matches_processed = 0
+                
+                for j, match_id in enumerate(matches):
+                    if matches_processed >= 5:  # Increased from 2 to 5 matches per player
+                        break
                         
-                        # Only include Set 15 matches
-                        if match_details and self.riot_api._is_set15_match(match_details):
-                            set15_matches.append(match_details)
-                            print(f"    Added Set 15 match: {match_id}")
-                            matches_processed += 1
-                        elif match_details:
-                            set_num = match_details.get("info", {}).get("tft_set_number", "Unknown")
-                            print(f"    Skipped Set {set_num} match")
-                        else:
-                            print(f"    No match details returned")
-                        
-                        # Stop if we have enough total data
-                        if len(set15_matches) >= target_matches:
-                            break
+                    print(f"    Processing match {j+1}...")
+                    # Filter for Set 15 and patch 15.3+
+                    require_patch_15_3 = getattr(self.settings, 'require_patch_15_3', True)
+                    match_details = await self.riot_api.get_match_details(match_id, require_patch_15_3=require_patch_15_3)
                     
-                    successful_players += 1
+                    # Only include valid matches (already filtered by get_match_details)
+                    if match_details:
+                        set15_matches.append(match_details)
+                        info = match_details.get("info", {})
+                        game_version = info.get("game_version", "Unknown")
+                        set_number = info.get("tft_set_number", "Unknown")
+                        game_datetime = info.get("game_datetime", 0)
+                        match_date = datetime.fromtimestamp(game_datetime / 1000).strftime('%Y-%m-%d') if game_datetime else "Unknown"
+                        print(f"    ✅ Added Set {set_number} match: {match_id} (version: {game_version}, date: {match_date})")
+                        matches_processed += 1
+                    else:
+                        print("    ⏭️ Skipped match (not Set 15 or filtered out)")
+                    
+                    # Stop if we have enough total data
+                    if len(set15_matches) >= target_matches:
+                        break
+                    
+                successful_players += 1
                 
                 # Stop if we have enough data
                 if len(set15_matches) >= target_matches:
@@ -127,8 +148,28 @@ class CompAnalysisWorkflow:
             if len(set15_matches) == 0:
                 print("No Set 15 matches found - possible reasons:")
                 print("   • Rate limiting prevented data collection")
-                print("   • All recent matches are from older sets")
-                print("   • Players haven't played Set 15 recently")
+                print("   • All recent matches are from older sets or patches")
+                print("   • Players haven't played Set 15 patch 15.3+ recently")
+                print("   • API key may be invalid or expired")
+                use_24h_filter = getattr(self.settings, 'use_24h_filter', False)
+                if use_24h_filter:
+                    print("   • 24-hour filter may be too restrictive (try disabling)")
+                require_patch_15_3 = getattr(self.settings, 'require_patch_15_3', True)
+                if require_patch_15_3:
+                    print("   • Patch 15.3+ filter may be excluding older matches (try disabling)")
+                
+                print("\n💡 Suggestions:")
+                if use_24h_filter:
+                    print("   • Disable '24-Hour Match Filter' in Development Settings")
+                if require_patch_15_3:
+                    print("   • Set REQUIRE_PATCH_15_3=false in your .env file to include older patches")
+                print("   • Try enabling 'Use Cached Data' for development")
+                print("   • Check that challenger players have played TFT recently")
+                
+                # Don't raise an exception immediately, let the workflow continue with empty data
+                print("\n⚠️ Continuing analysis with limited data...")
+                # Set a flag so downstream components know there's no data
+                state["no_match_data"] = True
             elif len(set15_matches) < target_matches:
                 print(f"Only found {len(set15_matches)}/{target_matches} target matches")
                 print("   This is normal with Development API key rate limits")
@@ -149,9 +190,38 @@ class CompAnalysisWorkflow:
         print(f"Analyzing {match_count} Set 15 matches...")
         
         if match_count == 0:
-            print("No match data to analyze, using fallback analysis")
-            state["extracted_comps"] = "No Set 15 match data available for analysis"
-            return state
+            if state.get("no_match_data"):
+                print("No match data available - providing general Set 15 guidance...")
+                state["extracted_comps"] = """# Set 15: K.O. Coliseum - General Meta Guide
+
+## Current Meta Compositions (General Guidance)
+
+Since no recent match data was available, here's general guidance for Set 15: K.O. Coliseum:
+
+### Strong Compositions
+- **Arcane Domination**: Focus on Jinx and Vi synergies
+- **Conqueror/Warband**: Strong frontline with carry potential
+- **Family/Multirole**: Flexible compositions with multiple win conditions
+
+### Key Champions to Consider
+- **Jinx**: Primary AD carry with strong late-game scaling
+- **Vi**: Tank/bruiser with good utility
+- **Ekko**: AP carry with mobility
+- **Warwick**: Strong early game unit
+
+### Tips
+- Power Snax system provides 2 power-ups per game (rounds 1-3 and 3-6)
+- 3-star 5-costs have CC immunity and 20 mana regen
+- Games typically run longer (40+ rounds)
+
+**Note**: This is general guidance. For current meta analysis, please:
+- Disable strict filtering options
+- Ensure API connectivity
+- Try again when challenger players have recent matches
+"""
+                return state
+            else:
+                raise ValueError("No match data to analyze. Cannot proceed without real match data.")
         
         # Create a summary of match data for analysis
         match_summary = []
@@ -175,27 +245,29 @@ class CompAnalysisWorkflow:
                         "units": unit_names[:8],    # Top 8 units
                     })
         
+        # Get current patch for context
+        current_patch = getattr(self.settings, 'current_patch', '15.17')
+        
         prompt = f"""
-        Analyze these TFT Set 15: K.O. Coliseum match results from Patch 15.17.
+        Analyze these TFT Set 15: K.O. Coliseum match results from Patch {current_patch}+ (released 2025/08/26 onwards).
         
         Set 15 Context:
         - Power Snax system: 2 power-ups per game (rounds 1-3 and 3-6)
-        - Role system: Tank, Fighter, Marksman, Caster, Assassin, Specialist
+        - Current patch: {current_patch}
         - 3-star 5-costs have CC immunity and 20 mana regen
         - Longer games (40+ rounds common)
         - 3 augments per game
         
-        Match Data Summary ({len(match_summary)} successful compositions):
+        Match Data Summary ({len(match_summary)} successful compositions from real matches):
         {match_summary}
         
         For each composition pattern, identify:
-        1. Primary trait combinations and synergy strengths
-        2. Key carry units and optimal itemization
-        3. Role-based team structure and positioning
-        4. Power Snax optimization opportunities
-        5. Placement consistency and win conditions
-        
-        Focus on actionable patterns from this real Set 15 data.
+        1. SPECIFIC UNIT NAMES and champion builds
+        2. Primary trait combinations and synergies
+        3. Key carry units with their exact names and optimal itemization
+        4. Role-based team structure and positioning
+        5. Power Snax optimization opportunities
+        6. Placement consistency and win conditions
         """
         
         messages = [
@@ -205,6 +277,7 @@ class CompAnalysisWorkflow:
         
         try:
             analysis = await self.llm.generate(messages, max_tokens=1500)
+            
             state["extracted_comps"] = analysis
             print("Completed composition extraction")
         except Exception as e:
@@ -214,22 +287,35 @@ class CompAnalysisWorkflow:
         return state
     
     async def _analyze_set15_performance(self, state: AnalysisState) -> AnalysisState:
-        """Analyze Set 15 performance patterns"""
-        print("Analyzing Set 15 performance...")
+        """Analyze performance patterns"""
+        print("Analyzing performance patterns...")
+        
+        # Handle case with no match data
+        if state.get("no_match_data"):
+            state["performance_analysis"] = """## Performance Insights (General Guidance)
+
+Without recent match data, here are general performance tips for Set 15:
+
+1. **Champion Synergies**: Focus on building strong trait combinations rather than forcing specific units
+2. **Economic Management**: Power Snax timing is crucial - use them strategically in rounds 1-3 and 3-6  
+3. **Positioning**: Late game positioning becomes critical with longer games (40+ rounds)
+
+For detailed performance analysis, please ensure recent match data is available."""
+            return state
+        
+        current_patch = getattr(self.settings, 'current_patch', '15.17')
         
         prompt = f"""
-        Based on the Set 15 compositions extracted, analyze performance patterns:
+        Based on the Set 15 compositions extracted, analyze performance patterns for patch {current_patch}+:
         
         Composition Analysis: {state["extracted_comps"]}
         
         Performance Questions:
-        1. Which trait combinations show the highest consistency?
-        2. What carry units are most reliable in the current meta?
-        3. How do Power Snax choices affect final placement?
-        4. Which role combinations provide the best frontline/backline balance?
-        5. What economic patterns lead to successful Set 15 games?
-        
-        Provide data-driven insights about what makes compositions successful in Set 15.
+        1. Which specific units show the highest carry potential and consistency?
+        2. What trait combinations with named champions are most reliable?
+        3. How do Power Snax choices on specific units affect final placement?
+        4. Which named units provide the best frontline/backline balance?
+        5. What economic patterns with specific champions lead to success?
         """
         
         messages = [
@@ -248,30 +334,66 @@ class CompAnalysisWorkflow:
         return state
     
     async def _synthesize_set15_meta(self, state: AnalysisState) -> AnalysisState:
-        """Create Set 15 specific meta report"""
-        print("Synthesizing Set 15 meta report...")
+        """Create meta report"""
+        print("Synthesizing meta report...")
+        
+        # Handle case with no match data
+        if state.get("no_match_data"):
+            state["final_report"] = f"""# TFT Set 15: K.O. Coliseum - General Meta Guide
+
+⚠️ **Limited Data Analysis**: This report is based on general Set 15 knowledge rather than recent match data.
+
+{state["extracted_comps"]}
+
+{state["performance_analysis"]}
+
+## Recommendations for Better Analysis
+
+To get detailed meta analysis based on current challenger gameplay:
+
+1. **Disable Restrictive Filters**:
+   - Uncheck "24-Hour Match Filter" in Development Settings
+   - Consider setting `REQUIRE_PATCH_15_3=false` in .env to include more matches
+
+2. **Enable Development Features**:
+   - Check "Use Cached Data" to avoid rate limits during testing
+   - Try running analysis at different times when players are more active
+
+3. **Check API Status**:
+   - Ensure your Riot API key is valid and not expired
+   - Development keys expire every 24 hours
+
+## Set 15 Meta Summary (General)
+
+**Current Meta**: Arcane-focused compositions with Jinx/Vi synergies
+**Game Length**: Typically 35-45 rounds due to Power Snax system
+**Key Mechanics**: 2 Power Snax per game, 3-star 5-costs with CC immunity
+
+---
+*This analysis will be more detailed once recent match data is available.*"""
+            return state
+        
+        current_patch = getattr(self.settings, 'current_patch', '15.17')
         
         prompt = f"""
-        Create a TFT Set 15 meta guide based on the analysis:
+        Create a TFT Set 15 meta guide based on the analysis for patch {current_patch}+:
 
         Performance Analysis: {state["performance_analysis"]}
         Composition Analysis: {state["extracted_comps"]}
         
         Create sections for:
         
-        ## PATCH 15.17 META TIER LIST
-        Rank the strongest compositions with brief descriptions
+        ## PATCH {current_patch}+ META TIER LIST
+        Rank the strongest compositions with specific unit names and brief descriptions
         
         ## POWER SNAX GUIDE
         Optimal champions and timing for power-ups
         
         ## POSITIONING STRATEGIES
-        Role-based positioning for maximum effectiveness
+        Role-based positioning with named units for maximum effectiveness
         
         ## CLIMBING RECOMMENDATIONS
-        Specific advice for ranking up in current meta
-        
-        Keep recommendations practical and focused on current Set 15 mechanics.
+        Specific advice with champion names for ranking up in current meta
         """
         
         messages = [

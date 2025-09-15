@@ -1,0 +1,201 @@
+{
+  "meta_analysis": {
+    "composition_stats": {
+      "reroll": {
+        "play_rate": 0.35,
+        "avg_placement": 3.2,
+        "win_rate": 0.68,
+        "sample_size": 35
+      },
+      "fast_8": {
+        "play_rate": 0.25,
+        "avg_placement": 3.8,
+        "win_rate": 0.52,
+        "sample_size": 25
+      },
+      "flex": {
+        "play_rate": 0.22,
+        "avg_placement": 4.1,
+        "win_rate": 0.45,
+        "sample_size": 22
+      },
+      "slow_roll": {
+        "play_rate": 0.12,
+        "avg_placement": 4.8,
+        "win_rate": 0.33,
+        "sample_size": 12
+      },
+      "vertical": {
+        "play_rate": 0.06,
+        "avg_placement": 5.2,
+        "win_rate": 0.28,
+        "sample_size": 6
+      }
+    },
+    "trait_analysis": {
+      "Bastion": {
+        "usage_rate": 0.42,
+        "avg_placement": 3.1,
+        "win_rate": 0.71,
+        "strength_score": 3.85
+      },
+      "Juggernaut": {
+        "usage_rate": 0.38,
+        "avg_placement": 3.3,
+        "win_rate": 0.65,
+        "strength_score": 3.42
+      },
+      "StarGuardian": {
+        "usage_rate": 0.28,
+        "avg_placement": 3.7,
+        "win_rate": 0.57,
+        "strength_score": 2.73
+      },
+      "BattleAcademia": {
+        "usage_rate": 0.25,
+        "avg_placement": 3.9,
+        "win_rate": 0.52,
+        "strength_score": 2.39
+      },
+      "Sniper": {
+        "usage_rate": 0.33,
+        "avg_placement": 4.0,
+        "win_rate": 0.48,
+        "strength_score": 2.16
+      }
+    },
+    "item_meta": {
+      "Guardian Angel": {
+        "usage_count": 28,
+        "avg_placement_when_used": 2.8,
+        "win_rate_when_used": 0.75
+      },
+      "Bloodthirster": {
+        "usage_count": 24,
+        "avg_placement_when_used": 3.1,
+        "win_rate_when_used": 0.71
+      },
+      "Infinity Edge": {
+        "usage_count": 32,
+        "avg_placement_when_used": 3.4,
+        "win_rate_when_used": 0.63
+      },
+      "Bramble Vest": {
+        "usage_count": 26,
+        "avg_placement_when_used": 3.6,
+        "win_rate_when_used": 0.58
+      },
+      "Last Whisper": {
+        "usage_count": 18,
+        "avg_placement_when_used": 3.8,
+        "win_rate_when_used": 0.56
+      }
+    },
+    "tier_list": {
+      "S": [
+        {
+          "comp": "reroll",
+          "score": 0.87,
+          "win_rate": 0.68,
+          "avg_placement": 3.2,
+          "play_rate": 0.35
+        }
+      ],
+      "A": [
+        {
+          "comp": "fast_8",
+          "score": 0.65,
+          "win_rate": 0.52,
+          "avg_placement": 3.8,
+          "play_rate": 0.25
+        },
+        {
+          "comp": "flex",
+          "score": 0.58,
+          "win_rate": 0.45,
+          "avg_placement": 4.1,
+          "play_rate": 0.22
+        }
+      ],
+      "B": [
+        {
+          "comp": "slow_roll",
+          "score": 0.42,
+          "win_rate": 0.33,
+          "avg_placement": 4.8,
+          "play_rate": 0.12
+        }
+      ],
+      "C": [
+        {
+          "comp": "vertical",
+          "score": 0.31,
+          "win_rate": 0.28,
+          "avg_placement": 5.2,
+          "play_rate": 0.06
+        }
+      ]
+    },
+    "trend_analysis": {
+      "rising": [
+        {
+          "comp": "reroll",
+          "change": 0.08,
+          "early_wr": 0.60,
+          "recent_wr": 0.68
+        }
+      ],
+      "falling": [
+        {
+          "comp": "fast_8",
+          "change": -0.07,
+          "early_wr": 0.59,
+          "recent_wr": 0.52
+        }
+      ],
+      "stable": [
+        {
+          "comp": "flex",
+          "change": 0.02,
+          "early_wr": 0.43,
+          "recent_wr": 0.45
+        }
+      ]
+    },
+    "counter_relationships": {
+      "reroll": {
+        "fast_8": {
+          "win_rate": 0.72,
+          "sample_size": 15
+        },
+        "flex": {
+          "win_rate": 0.58,
+          "sample_size": 12
+        }
+      },
+      "fast_8": {
+        "reroll": {
+          "win_rate": 0.28,
+          "sample_size": 15
+        },
+        "vertical": {
+          "win_rate": 0.83,
+          "sample_size": 8
+        }
+      },
+      "flex": {
+        "slow_roll": {
+          "win_rate": 0.67,
+          "sample_size": 9
+        }
+      }
+    }
+  },
+  "raw_matches": [],
+  "collection_info": {
+    "timestamp": "20250914_160000",
+    "num_matches": 100,
+    "tiers": ["CHALLENGER", "GRANDMASTER", "MASTER"],
+    "time_window_hours": 24
+  }
+}
