@@ -163,14 +163,30 @@ The primary interface is our professional Typer-based CLI with Rich visual outpu
 ./tft ml train --matches 150 --rank CHALLENGER
 ```
 
-### Web Interface
+### Web Interfaces
 
+Streamlit (dashboard):
 ```bash
 # Launch Streamlit dashboard
-streamlit run streamlit_app.py
+uv run streamlit run streamlit_app.py
 ```
+Open http://localhost:8501
 
-Access at `http://localhost:8501` for the interactive web interface with the same AI agents and data.
+Reflex (SPA polished UI):
+```bash
+# Install project deps and run (defaults to :3000)
+uv sync
+uv run reflex run --loglevel info
+
+# Or use Makefile helpers
+make ui               # dev server
+make ui-prod          # production mode
+make ui-port PORT=3002  # custom port
+```
+Notes:
+- If :3000 is taken, Reflex auto-falls back to :3001.
+- Entry is configured via `rxconfig.py` with `app_name="reflex_app"`; module `reflex_app/reflex_app.py` re-exports the `app` instance.
+- Reflex UI uses the same `.env` keys and backend tools as Streamlit.
 
 ### Demo & Examples
 
