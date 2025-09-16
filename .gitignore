@@ -94,6 +94,22 @@ pids
 # Optional eslint cache
 .eslintcache
 
+# Node.js and npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Next.js
+.next/
+out/
+.vercel
+
+# React
+build/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
