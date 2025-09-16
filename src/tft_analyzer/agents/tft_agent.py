@@ -88,7 +88,14 @@ class TFTAgent:
             provider: LLM provider ("anthropic" or "openai")
             model: Specific model to use
         """
-        self.settings = Settings()
+        # Try to load settings, but handle gracefully if API keys are missing
+        try:
+            self.settings = Settings()
+        except Exception as e:
+            print(f"Warning: Could not load settings: {e}")
+            print("Agent will run with limited functionality")
+            self.settings = None
+
         self.provider = provider
         self.model = model or self._get_default_model()
 
@@ -96,7 +103,11 @@ class TFTAgent:
         self._initialize_llm()
 
         # Initialize data manager
-        self.meta_data_manager = TFTMetaDataManager()
+        try:
+            self.meta_data_manager = TFTMetaDataManager()
+        except Exception as e:
+            print(f"Warning: Could not initialize meta data manager: {e}")
+            self.meta_data_manager = None
 
         # Initialize real-time streaming trainer (lazy initialization)
         self._streaming_trainer = None
@@ -127,24 +138,51 @@ class TFTAgent:
 
     def _initialize_llm(self):
         """Initialize the LLM client."""
-        if self.provider == "anthropic":
-            api_key = self.settings.get_api_key_for_provider("anthropic")
-            self.llm = ChatAnthropic(
-                model=self.model,
-                anthropic_api_key=api_key,
-                temperature=0.1,
-                max_tokens=2000
-            )
-        elif self.provider == "openai":
-            api_key = self.settings.get_api_key_for_provider("openai")
-            self.llm = ChatOpenAI(
-                model=self.model,
-                openai_api_key=api_key,
-                temperature=0.1,
-                max_tokens=2000
-            )
+        if self.settings is None:
+            # Fallback to environment variables if Settings failed
+            import os
+            if self.provider == "anthropic":
+                api_key = os.getenv("ANTHROPIC_API_KEY")
+                if not api_key:
+                    raise ValueError("ANTHROPIC_API_KEY not found in environment")
+                self.llm = ChatAnthropic(
+                    model=self.model,
+                    anthropic_api_key=api_key,
+                    temperature=0.1,
+                    max_tokens=2000
+                )
+            elif self.provider == "openai":
+                api_key = os.getenv("OPENAI_API_KEY")
+                if not api_key:
+                    raise ValueError("OPENAI_API_KEY not found in environment")
+                self.llm = ChatOpenAI(
+                    model=self.model,
+                    openai_api_key=api_key,
+                    temperature=0.1,
+                    max_tokens=2000
+                )
+            else:
+                raise ValueError(f"Unsupported provider: {self.provider}")
         else:
-            raise ValueError(f"Unsupported provider: {self.provider}")
+            # Use settings as normal
+            if self.provider == "anthropic":
+                api_key = self.settings.get_api_key_for_provider("anthropic")
+                self.llm = ChatAnthropic(
+                    model=self.model,
+                    anthropic_api_key=api_key,
+                    temperature=0.1,
+                    max_tokens=2000
+                )
+            elif self.provider == "openai":
+                api_key = self.settings.get_api_key_for_provider("openai")
+                self.llm = ChatOpenAI(
+                    model=self.model,
+                    openai_api_key=api_key,
+                    temperature=0.1,
+                    max_tokens=2000
+                )
+            else:
+                raise ValueError(f"Unsupported provider: {self.provider}")
 
     def _build_graph(self) -> StateGraph:
         """Build the LangGraph workflow."""

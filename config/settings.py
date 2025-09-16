@@ -2,13 +2,21 @@ from pydantic_settings import BaseSettings
 from pydantic import Field
 from enum import Enum
 from typing import Optional, List
+from pathlib import Path
 
 class LLMProvider(str, Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
 
 class Settings(BaseSettings):
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    model_config = {
+        "env_file": [
+            ".env",  # Current directory
+            "../.env",  # Parent directory (for backend running from backend/)
+            str(Path(__file__).parent.parent / ".env")  # Project root
+        ],
+        "env_file_encoding": "utf-8"
+    }
     
     # API Keys - Updated field names to match environment variables
     riot_api_key: str = Field(..., env="RIOT_API_KEY", description="Riot Games API key")

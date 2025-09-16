@@ -923,7 +923,7 @@ def get_meta_trends(refresh_data: bool = False) -> str:
         trends = meta_info.get('trends', {})
 
         if not trends:
-            return "📈 **TFT Meta Trends**\n\n❌ No trend data available. Using enhanced meta data.\n\nBased on recent composition performance:\n\n**Currently Trending:**\n• Lee Sin Stance Master builds are performing well\n• Sucker Punch compositions showing consistency\n• Reroll strategies gaining popularity at high elo\n\n**Meta Insights:**\n• Diversity remains high across all tiers\n• Fast 8 strategies effective in current patch\n• Trait synergies more important than individual champion power"
+            return "📈 **TFT Meta Trends**\n\n❌ No trend data available. Using enhanced meta data.\n\nBased on recent Set 15 composition performance:\n\n**Currently Trending:**\n• Mighty Mech reroll compositions remain strong\n• Star Guardian fast 8 builds showing consistency \n• Soul Fighter flexible compositions gaining popularity\n\n**Meta Insights:**\n• Power Snax system adds strategic depth\n• Role-based positioning is more important\n• 3-star 5-cost champions provide strong late-game win conditions\n• Trait synergy completion crucial for success"
 
         response = "📈 **TFT Meta Trends**\n\n"
 
